@@ -8,7 +8,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Modelo Delay-Time — Taxa de Custo</title>
+  <title>Modelo de manutenção K&Delta;TS</title>
 
   <!--
     FONTES GOOGLE (3 famílias):
@@ -770,7 +770,7 @@
 <!-- ── HEADER: barra superior fija con logo y etiqueta ── -->
 <header>
   <!-- Logo: "KDTS" blanco + "·" dorado (el <span> recibe color var(--accent) por CSS) -->
-  <div class="logo">KDTS<span>·</span></div>
+  <div class="logo">K&Delta;TS</div>
   <div class="header-right">
     <!-- Pastilla con borde teal en la esquina derecha del header -->
     <span class="header-tag">MODELO DE MANUTENÇÃO</span>
@@ -813,7 +813,7 @@
     <!-- Ítem P → abre modal con fórmulas de la política (c(D,T,K), restricción K·D≤T) -->
     <div class="sidebar-item" onclick="openModal('modal-politica')">
       <div class="sidebar-num">P</div>
-      <div class="sidebar-label">D, T e intervalo K</div>
+      <div class="sidebar-label">K&Delta;TS</div>
       <span class="hint-dot">∑</span>
     </div>
 
@@ -834,12 +834,12 @@
          Dos columnas flex: número decorativo "KDTS" (72px) + bloque de título -->
     <div class="ex-header">
       <!-- Número decorativo grande — cambiar el texto aquí para modificarlo en pantalla -->
-      <div class="ex-number-big">KDTS</div>
+      <div class="ex-number-big">K&Delta;TS</div>
       <div class="ex-title-block">
         <!-- Pastilla de tipo: "POLÍTICA DE MANUTENÇÃO" en dorado -->
         <span class="level-tag">POLÍTICA DE MANUTENÇÃO</span>
         <!-- Título principal del modelo -->
-        <div class="ex-title">Con costo de degradacion natural y choques</div>
+        <div class="ex-title">Com custo de degradação natural e choques</div>
         <!-- Subtítulo descriptivo en JetBrains Mono -->
         <div class="ex-subtitle">mistura Weibull · exponencial · delay-time · 9 cenários</div>
       </div>
@@ -848,11 +848,11 @@
     <!-- ── DESCRIPCIÓN DEL MODELO ──
          Panel con texto explicativo, la fórmula central c(D,T,K) y chips de concepto -->
     <div class="param-panel" style="line-height:1.7; font-size:14.5px;">
-      Modelo baseado na teoria de <strong style="color:#fff">delay-time</strong>: um defeito surge no instante <strong style="color:var(--accent)">x</strong> (degradação) ou <strong style="color:var(--accent)">z</strong> (choque), mas só causa falha após um período de latência <strong style="color:var(--accent)">h</strong>. A taxa de custo é calculada como:
+      Modelo baseado na teoria de delay-time: um defeito surge no instante <strong style="color:var(--accent)">x</strong> (degradação) ou <strong style="color:var(--accent)">z</strong> (choque), mas só causa falha após um período de delay-time <strong style="color:var(--accent)">h</strong>. A taxa de custo é calculada como:
       <!-- Recuadro verde con la fórmula central del modelo -->
       <div class="formula-box" style="margin-top:14px;">
         <div class="formula-title">Fórmula central</div>
-        c(D, T, K) = E[Custo do ciclo] / E[Duração do ciclo] = SC / SV
+        C(K, &Delta;, T) = E[Custo do ciclo] / E[Duração do ciclo] = SC / SV
       </div>
       <!-- Chips de concepto — agregar/quitar <span class="concept-tag"> para más chips -->
       <div class="concepts" style="margin-top:14px;">
@@ -1006,7 +1006,7 @@
         </div>
         <!-- Recordatorio visual de la restricción estructural del modelo -->
         <div style="margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#fff; padding: 6px 0;">
-          Restrição: K·D ≤ T
+          Restrição: K·&Delta; ≤ T
         </div>
       </div>
     </div>
@@ -1031,7 +1031,7 @@
            · .progress-wrap (barra de progreso durante el cálculo)
            · .results-wrap (cards + tabla + formula-box al terminar)
            · .error-box (si hay error de validación o cálculo) -->
-    <div class="section-label" id="sec-resultado">RESULTADO — TAXA DE CUSTO c(D, T, K)</div>
+    <div class="section-label" id="sec-resultado">RESULTADO — TAXA DE CUSTO C(K, &Delta;, T)</div>
     <div id="outputArea">
       <!-- Estado inicial: ícono decorativo SVG de documento + mensaje instructivo.
            Este contenido es reemplazado por JS en showOutput() al calcular o resetear. -->
@@ -1180,7 +1180,7 @@
         <div class="modal-icon">C</div>
         <div>
           <div class="modal-title">Funções de Custo</div>
-          <div class="modal-subtitle">9 CENÁRIOS — fc₁ até fc₉</div>
+          <div class="modal-subtitle">9 CENÁRIOS</div>
         </div>
       </div>
       <button class="modal-close" onclick="closeModal('modal-custos')">✕</button>
@@ -1190,27 +1190,27 @@
       <div class="formula-card">
         <div class="formula-card-header">Cenários 1 e 5 — Falha antes da inspeção i (corretiva)</div>
         <div class="formula-card-body">
-          $$c_1(h) = c_f + c_i(i-1) + c_n \cdot h \qquad c_5(h) = c_f + c_i(i-1) + c_c \cdot h$$
+          $$C_1(h) = C_F + C_I(i-1) + C_N \cdot h \qquad C_5(h) = C_F + C_I(i-1) + C_C \cdot h$$
         </div>
         <div class="formula-card-desc">
-          Custo corretivo + <code>(i-1)</code> inspeções já realizadas + custo proporcional ao delay-time <code>h</code>. Diferença: <code>c_n</code> para degradação, <code>c_c</code> para choque.
+          Custo corretivo + <code>(i-1)</code> inspeções já realizadas + custo proporcional ao delay-time <code>h</code>. Diferença: <code>C_N</code> para degradação, <code>C_C</code> para choque.
         </div>
       </div>
 
       <div class="formula-card">
         <div class="formula-card-header">Cenários 2 e 6 — Detectado na inspeção i (preventiva)</div>
         <div class="formula-card-body">
-          $$c_2(x) = c_p + c_i \cdot i + c_n(iD - x) \qquad c_6(z) = c_p + c_i \cdot i + c_c(iD - z)$$
+          $$C_2(x) = C_P + C_I \cdot i + C_N(i\Delta - x) \qquad C_6(z) = C_P + C_I \cdot i + C_C(i\Delta - z)$$
         </div>
         <div class="formula-card-desc">
-          Custo preventivo + <code>i</code> inspeções + custo proporcional ao tempo de defeito latente <code>(iD - x)</code> ou <code>(iD - z)</code> sem ser detectado.
+          Custo preventivo + <code>i</code> inspeções + custo proporcional ao tempo de defeito latente <code>(i\Delta - x)</code> ou <code>(i\Delta - z)</code> sem ser detectado.
         </div>
       </div>
 
       <div class="formula-card">
         <div class="formula-card-header">Cenários 3 e 7 — Falha entre K·D e T (corretiva)</div>
         <div class="formula-card-body">
-          $$c_3(h) = c_f + c_i K + c_n \cdot h \qquad c_7(h) = c_f + c_i K + c_c \cdot h$$
+          $$C_3(h) = C_F + C_I \cdot K + C_N \cdot h \qquad C_7(h) = C_F + C_I \cdot K + C_C \cdot h$$
         </div>
         <div class="formula-card-desc">
           Falha ocorre no período final após as <code>K</code> inspeções, antes de atingir a idade <code>T</code>.
@@ -1220,7 +1220,7 @@
       <div class="formula-card">
         <div class="formula-card-header">Cenários 4 e 8 — Sobrevive até T (preventiva por idade)</div>
         <div class="formula-card-body">
-          $$c_4(x) = c_p + c_i K + c_n(T - x) \qquad c_8(z) = c_p + c_i K + c_c(T - z)$$
+          $$C_4(x) = C_P + C_I \cdot K + C_N(T - x) \qquad C_8(z) = C_P + C_I \cdot K + C_C(T - z)$$
         </div>
         <div class="formula-card-desc">
           Defeito presente mas o componente é substituído ao atingir a idade <code>T</code>. Custo proporcional ao tempo latente <code>(T - x)</code> ou <code>(T - z)</code>.
@@ -1230,7 +1230,7 @@
       <div class="formula-card">
         <div class="formula-card-header">Cenário 9 — Sem defeito até T</div>
         <div class="formula-card-body">
-          $$c_9 = c_p + c_i K$$
+          $$C_9 = C_P + C_I \cdot K$$
         </div>
         <div class="formula-card-desc">
           Nenhum defeito até <code>T</code>. Substituição puramente preventiva por idade. Apenas custo preventivo e <code>K</code> inspeções realizadas.
@@ -1249,7 +1249,7 @@
         <div class="modal-icon">R</div>
         <div>
           <div class="modal-title">Taxa de Custo</div>
-          <div class="modal-subtitle">RESULTADO — c(D, T, K)</div>
+          <div class="modal-subtitle">RESULTADO — C(K, &Delta;, T)</div>
         </div>
       </div>
       <button class="modal-close" onclick="closeModal('modal-taxa')">✕</button>
@@ -1259,10 +1259,10 @@
       <div class="formula-card">
         <div class="formula-card-header">Fórmula Central</div>
         <div class="formula-card-body">
-          $$c(D,T,K) = \frac{SC}{SV} = \frac{E[\text{Custo do ciclo}]}{E[\text{Duração do ciclo}]}$$
+          $$C(K,&Delta;,T) = \frac{SC}{SV} = \frac{E[\text{Custo do ciclo}]}{E[\text{Duração do ciclo}]}$$
         </div>
         <div class="formula-card-desc">
-          A taxa de custo é a razão entre o custo esperado total do ciclo <code>SC</code> e a vida esperada do ciclo <code>SV</code>. Minimizada sobre os parâmetros <code>D</code>, <code>T</code> e <code>K</code>.
+          A taxa de custo é a razão entre o custo esperado total do ciclo <code>SC</code> e a vida esperada do ciclo <code>SV</code>. Minimizada sobre os parâmetros <code>K</code>, <code>&Delta;</code> e <code>T</code>.
         </div>
       </div>
 
@@ -1272,7 +1272,7 @@
           $$SC = \sum_{j=1}^{9} E[c_j \cdot \mathbf{1}_{\text{cenário }j}]$$
         </div>
         <div class="formula-card-desc">
-          Soma ponderada dos custos de cada cenário pela sua probabilidade de ocorrência. Inclui custos corretivos <code>c_f</code>, preventivos <code>c_p</code>, inspeções <code>c_i</code> e custos de latência <code>c_n</code>, <code>c_c</code>.
+          Soma ponderada dos custos de cada cenário pela sua probabilidade de ocorrência. Inclui custos corretivos <code>C_F</code>, preventivos <code>C_P</code>, inspeções <code>C_I</code> e custos de latência <code>C_N</code>, <code>C_C</code>.
         </div>
       </div>
 
@@ -1282,17 +1282,17 @@
           $$SV = \sum_{j=1}^{9} E[v_j \cdot \mathbf{1}_{\text{cenário }j}]$$
         </div>
         <div class="formula-card-desc">
-          Duração esperada do ciclo ponderada pela probabilidade de cada cenário. Para cenários com falha: <code>v = x + h</code> ou <code>v = z + h</code>. Para preventivos: <code>v = i·D</code> ou <code>v = T</code>.
+          Duração esperada do ciclo ponderada pela probabilidade de cada cenário. Para cenários com falha: <code>v = x + h</code> ou <code>v = z + h</code>. Para preventivos: <code>v = i·&Delta;</code> ou <code>v = T</code>.
         </div>
       </div>
 
       <div class="formula-card">
         <div class="formula-card-header">Restrição e K ótimo</div>
         <div class="formula-card-body">
-          $$K \in \{0, 1, \ldots, K_{\max}\}, \quad K_{\max} = \left\lfloor \frac{T}{D} \right\rfloor$$
+          $$K \in \{0, 1, \ldots, K_{\max}\}, \quad K_{\max} = \left\lfloor \frac{T}{&Delta;} \right\rfloor$$
         </div>
         <div class="formula-card-desc">
-          O K ótimo é aquele que minimiza <code>c(D, T, K)</code>. O código itera todos os valores válidos e seleciona o de menor taxa.
+          O K ótimo é aquele que minimiza <code>C(K, &Delta;, T)</code>. O código itera todos os valores válidos e seleciona o de menor taxa.
         </div>
       </div>
 
@@ -1316,20 +1316,20 @@
       <div class="formula-card">
         <div class="formula-card-header">Taxa de Custo</div>
         <div class="formula-card-body">
-          $$c(D,T,K) = \frac{E[\text{Custo do ciclo}]}{E[\text{Duração do ciclo}]} = \frac{SC}{SV}$$
+          $$C(K,&Delta;,T) = \frac{E[\text{Custo do ciclo}]}{E[\text{Duração do ciclo}]} = \frac{SC}{SV}$$
         </div>
         <div class="formula-card-desc">
-          Razão entre o custo esperado total e a vida esperada do ciclo. Minimizada sobre <code>D</code>, <code>T</code> e <code>K</code>.
+          Razão entre o custo esperado total e a vida esperada do ciclo. Minimizada sobre <code>K</code>, <code>&Delta;</code> e <code>T</code>.
         </div>
       </div>
 
       <div class="formula-card">
         <div class="formula-card-header">Restrição da Política</div>
         <div class="formula-card-body">
-          $$K \cdot D \leq T \qquad K_{\max} = \left\lfloor \frac{T}{D} \right\rfloor$$
+          $$K \cdot &Delta; \leq T \qquad K_{\max} = \left\lfloor \frac{T}{&Delta;} \right\rfloor$$
         </div>
         <div class="formula-card-desc">
-          As <code>K</code> inspeções periódicas devem ocorrer antes da substituição preventiva em <code>T</code>. O número máximo de inspeções é o piso de <code>T/D</code>.
+          As <code>K</code> inspeções periódicas devem ocorrer antes da substituição preventiva em <code>T</code>. O número máximo de inspeções é o piso de <code>T/&Delta;</code>.
         </div>
       </div>
 
@@ -1339,7 +1339,7 @@
           $$\sum_{j=1}^{9} P(\text{Cenário } j) = 1$$
         </div>
         <div class="formula-card-desc">
-          Os 9 cenários são mutuamente exclusivos e coletivamente exaustivos. A soma das probabilidades deve ser igual a 1 para cada combinação válida de <code>(D, T, K)</code>.
+          Os 9 cenários são mutuamente exclusivos e coletivamente exaustivos. A soma das probabilidades deve ser igual a 1 para cada combinação válida de <code>(K, &Delta;, T)</code>.
         </div>
       </div>
 
@@ -1351,11 +1351,11 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // KDTS — MODELO DE TAXA DE CUSTO COM DELAY-TIME
 // ═══════════════════════════════════════════════════════════════════════════════
-// Este arquivo implementa o modelo matemático KDTS para calcular a taxa de custo
-// de uma política de manutenção baseada em delay-time, com degradação natural
+// O modelo matemático KDTS para calcular a taxa de custo de uma política de 
+// manutenção baseada em delay-time, com degradação natural
 // (mistura Weibull) e choques externos (Poisson/Exponencial).
 //
-// ESTRUTURA DO ARQUIVO:
+// ESTRUTURA:
 //   1. Funções de integração numérica  (integrate, integrate2)
 //   2. Função principal do modelo      (computeCost)
 //      ├── Distribuições de probabilidade
@@ -1490,11 +1490,7 @@ function computeCost(p, K) {
 
   // ── 2.2 TABELA MEMOIZADA DE Rx(t) ──────────────────────────────────────
   // Rx(t) = P(X > t) = ∫ₜ^∞ fx(x) dx  (confiabilidade por degradação natural)
-  //
-  // PROBLEMA: Rx é chamada milhares de vezes dentro de integrações duplas
-  // (cenários 5, 6, 7, 8), o que travaria o navegador se recalculada a cada vez.
-  //
-  // SOLUÇÃO: Pré-calcular Rx em uma tabela de 2000 pontos uniformes de 0 até
+  // Pré-calcular Rx em uma tabela de 2000 pontos uniformes de 0 até
   // tMax, usando integração trapezoidal acumulada de trás para frente.
   // Depois, uma interpolação linear fornece Rx(t) instantaneamente.
 
