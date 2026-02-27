@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <!-- ═══════════════════════════════════════════════════════════════════════════
      KDTS — MODELO DE MANUTENÇÃO: TAXA DE CUSTO c(D, T, K)
-     Implementação web do modelo delay-time com degradação natural (mistura
-     Weibull) e choques externos (Poisson/Exponencial). 9 cenários de falha.
+     Implementación web del modelo delay-time con degradación natural (mezcla
+     Weibull) y choques externos (Poisson/Exponencial). 9 escenarios de falla.
      ═══════════════════════════════════════════════════════════════════════════ -->
 <html lang="pt-BR">
 <head>
@@ -12,16 +12,16 @@
 
   <!--
     FONTES GOOGLE (3 famílias):
-    · JetBrains Mono  → usada em inputs numéricos, valores calculados e código
-    · Barlow Condensed → usada em títulos, sidebar e botões
-    · Barlow           → usada no texto corrido do body
+    · JetBrains Mono  → usada en inputs numéricos, valores calculados y código
+    · Barlow Condensed → usada en títulos, sidebar y botones
+    · Barlow           → usada en el texto corrido del body
   -->
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Barlow+Condensed:wght@300;600;800&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
 
 <style>
   /* ══════════════════════════════════════════════════════════════════════════
-     VARIÁVEIS CSS GLOBAIS — paleta de cores e tokens de design
-     Alterar qualquer valor aqui afeta TODA a página imediatamente.
+     VARIABLES CSS GLOBALES — paleta de colores y tokens de diseño
+     Cambiar cualquier valor aquí afecta TODA la página inmediatamente.
      ══════════════════════════════════════════════════════════════════════════ */
   :root {
     --bg:           #0a0c10;  /* fondo negro de toda la página (body) */
@@ -318,7 +318,7 @@
   }
 
   /* ── CONCEPTS ── Etiquetas de concepto (chips) en el bloque de descripción del modelo
-     (ej: "9 cenários", "Weibull mistura", "Delay-time") */
+     (ej: "9 escenarios", "Weibull mezcla", "Delay-time") */
   .concepts {
     display: flex;
     flex-wrap: wrap;
@@ -537,7 +537,7 @@
     color: #8aa860;       /* color verde claro del texto de parámetros */
     line-height: 1.8;
   }
-  /* Título "PARÂMETROS UTILIZADOS" dentro del formula-box */
+  /* Título "PARÁMETROS UTILIZADOS" dentro del formula-box */
   .formula-box .formula-title {
     font-size: 10px;
     letter-spacing: 2px;
@@ -562,7 +562,7 @@
   }
 
   /* ── PLACEHOLDER ── Estado inicial del área de resultado (#outputArea).
-     Muestra un ícono SVG de documento y el texto "Configure os parâmetros...".
+     Muestra un ícono SVG de documento y el texto "Configure los parámetros...".
      Se reemplaza por JS al calcular o al resetear. */
   .placeholder {
     display: flex;
@@ -789,13 +789,13 @@
     <!-- Ítem W → abre modal con fórmulas de la mezcla Weibull (f₁, f₂, fx) -->
     <div class="sidebar-item" onclick="openModal('modal-weibull')">
       <div class="sidebar-num">W</div>
-      <div class="sidebar-label">Mistura Weibull</div>
+      <div class="sidebar-label">Mezcla Weibull</div>
       <span class="hint-dot">∑</span>
     </div>
     <!-- Ítem E → abre modal con fórmulas de delay-time y choques (fh, Rh, fz, Rz) -->
     <div class="sidebar-item" onclick="openModal('modal-exp')">
       <div class="sidebar-num">E</div>
-      <div class="sidebar-label">Delay-time e Choques</div>
+      <div class="sidebar-label">Delay-time y Choques</div>
       <span class="hint-dot">∑</span>
     </div>
 
@@ -804,7 +804,7 @@
     <!-- Ítem C → abre modal con definición de cf, cp, ci, cn, cc -->
     <div class="sidebar-item" onclick="openModal('modal-custos')">
       <div class="sidebar-num">C</div>
-      <div class="sidebar-label">Parâmetros de custo</div>
+      <div class="sidebar-label">Parámetros de costo</div>
       <span class="hint-dot">∑</span>
     </div>
 
@@ -822,7 +822,7 @@
     <!-- Ítem R → abre modal con la fórmula completa de la tasa de costo -->
     <div class="sidebar-item" onclick="openModal('modal-taxa')">
       <div class="sidebar-num">R</div>
-      <div class="sidebar-label">Taxa de custo</div>
+      <div class="sidebar-label">Tasa de costo</div>
       <span class="hint-dot">∑</span>
     </div>
   </aside>
@@ -839,25 +839,25 @@
         <!-- Pastilla de tipo: "POLÍTICA DE MANUTENÇÃO" en dorado -->
         <span class="level-tag">POLÍTICA DE MANUTENÇÃO</span>
         <!-- Título principal del modelo -->
-        <div class="ex-title">Com custo de degradação natural e choques</div>
+        <div class="ex-title">Con costo de degradación natural y choques</div>
         <!-- Subtítulo descriptivo en JetBrains Mono -->
-        <div class="ex-subtitle">mistura Weibull · exponencial · delay-time · 9 cenários</div>
+        <div class="ex-subtitle">mezcla Weibull · exponencial · delay-time · 9 escenarios</div>
       </div>
     </div>
 
     <!-- ── DESCRIPCIÓN DEL MODELO ──
          Panel con texto explicativo, la fórmula central c(D,T,K) y chips de concepto -->
     <div class="param-panel" style="line-height:1.7; font-size:14.5px;">
-      Modelo baseado na teoria de delay-time: um defeito surge no instante <strong style="color:var(--accent)">x</strong> (degradação) ou <strong style="color:var(--accent)">z</strong> (choque), mas só causa falha após um período de delay-time <strong style="color:var(--accent)">h</strong>. A taxa de custo é calculada como:
+      Modelo basado en la teoría de delay-time: un defecto surge en el instante <strong style="color:var(--accent)">x</strong> (degradación) o <strong style="color:var(--accent)">z</strong> (choque), pero solo causa falla tras un período de delay-time <strong style="color:var(--accent)">h</strong>. La tasa de costo se calcula como:
       <!-- Recuadro verde con la fórmula central del modelo -->
       <div class="formula-box" style="margin-top:14px;">
         <div class="formula-title">Fórmula central</div>
-        C(K, &Delta;, T) = E[Custo do ciclo] / E[Duração do ciclo] = SC / SV
+        C(K, &Delta;, T) = E[Costo del ciclo] / E[Duración del ciclo] = SC / SV
       </div>
       <!-- Chips de concepto — agregar/quitar <span class="concept-tag"> para más chips -->
       <div class="concepts" style="margin-top:14px;">
-        <span class="concept-tag">9 cenários</span>
-        <span class="concept-tag">Weibull mistura</span>
+        <span class="concept-tag">9 escenarios</span>
+        <span class="concept-tag">Weibull mezcla</span>
         <span class="concept-tag">Exponencial choque</span>
         <span class="concept-tag">Delay-time</span>
         <span class="concept-tag">Integração numérica</span>
@@ -874,13 +874,13 @@
         <div class="group-label">COMPONENTE FRACO</div>
         <div class="param-row">
           <label>n₁</label>
-          <span class="desc">Escala da Weibull (componente fraco)</span>
+          <span class="desc">Escala de la Weibull (componente débil)</span>
           <!-- id="n1" → leído por getParams() → usado como η₁ en f_debil(x) en JS -->
           <input type="number" id="n1" value="0.3" step="0.1" min="0.01">
         </div>
         <div class="param-row">
           <label>b₁</label>
-          <span class="desc">Forma da Weibull (componente fraco)</span>
+          <span class="desc">Forma de la Weibull (componente débil)</span>
           <!-- id="b1" → leído por getParams() → usado como β₁ en f_debil(x) en JS -->
           <input type="number" id="b1" value="3" step="0.5" min="0.1">
         </div>
@@ -890,13 +890,13 @@
         <div class="group-label">COMPONENTE FORTE</div>
         <div class="param-row">
           <label>n₂</label>
-          <span class="desc">Escala da Weibull (componente forte)</span>
+          <span class="desc">Escala de la Weibull (componente fuerte)</span>
           <!-- id="n2" → leído por getParams() → usado como η₂ en f_forte(x) en JS -->
           <input type="number" id="n2" value="3" step="0.1" min="0.01">
         </div>
         <div class="param-row">
           <label>b₂</label>
-          <span class="desc">Forma da Weibull (componente forte)</span>
+          <span class="desc">Forma de la Weibull (componente fuerte)</span>
           <!-- id="b2" → leído por getParams() → usado como β₂ en f_forte(x) en JS -->
           <input type="number" id="b2" value="3" step="0.5" min="0.1">
         </div>
@@ -906,7 +906,7 @@
         <div class="group-label">MISTURA</div>
         <div class="param-row">
           <label>a</label>
-          <span class="desc">Proporção de componentes fracos (0 &lt; a &lt; 1)</span>
+          <span class="desc">Proporción de componentes débiles (0 &lt; a &lt; 1)</span>
           <!-- id="a" → leído por getParams() → peso de la mezcla: fx = a·f_debil + (1-a)·f_forte -->
           <input type="number" id="a" value="0.05" step="0.01" min="0" max="1">
         </div>
@@ -923,7 +923,7 @@
         <div class="group-label">DELAY-TIME</div>
         <div class="param-row">
           <label>λ</label>
-          <span class="desc">Taxa exponencial do delay-time (inverso da média)</span>
+          <span class="desc">Tasa exponencial del delay-time (inverso de la media)</span>
           <!-- id="l" → leído por getParams() → tasa λ de fh(h) = λ·e^(-λh) y Rh(h) = e^(-λh) -->
           <input type="number" id="l" value="1" step="0.1" min="0.01">
         </div>
@@ -933,7 +933,7 @@
         <div class="group-label">CHOQUES EXTERNOS</div>
         <div class="param-row">
           <label>μ</label>
-          <span class="desc">Taxa de chegada dos choques externos</span>
+          <span class="desc">Tasa de llegada de los choques externos</span>
           <!-- id="u" → leído por getParams() → tasa μ de fz(z) = μ·e^(-μz) y Rz(z) = e^(-μz) -->
           <input type="number" id="u" value="0.5" step="0.1" min="0.01">
         </div>
@@ -942,37 +942,37 @@
 
     <!-- ── SECCIÓN: PARÂMETROS DE CUSTO ──
          Los 5 costos del modelo. id="sec-custos" → destino del scroll -->
-    <div class="section-label" id="sec-custos">PARÂMETROS DE CUSTO</div>
+    <div class="section-label" id="sec-custos">PARÁMETROS DE COSTO</div>
     <div class="param-panel">
       <div class="param-group" style="margin-bottom:0">
         <div class="group-label">CUSTOS DE SUBSTITUIÇÃO E INSPEÇÃO</div>
         <div class="param-row">
           <label>cᶠ</label>
-          <span class="desc">Custo de substituição corretiva (falha)</span>
-          <!-- id="cf" → costo cuando el componente falla (cenários 1, 3, 5, 7) -->
+          <span class="desc">Costo de sustitución correctiva (falla)</span>
+          <!-- id="cf" → costo cuando el componente falla (escenarios 1, 3, 5, 7) -->
           <input type="number" id="cf" value="5" step="0.5" min="0">
         </div>
         <div class="param-row">
           <label>cₚ</label>
-          <span class="desc">Custo de substituição preventiva</span>
-          <!-- id="cp" → costo cuando el defecto es detectado (cenários 2, 4, 6, 8, 9) -->
+          <span class="desc">Costo de sustitución preventiva</span>
+          <!-- id="cp" → costo cuando el defecto es detectado (escenarios 2, 4, 6, 8, 9) -->
           <input type="number" id="cp" value="1" step="0.1" min="0">
         </div>
         <div class="param-row">
           <label>cᵢ</label>
-          <span class="desc">Custo por inspeção realizada</span>
+          <span class="desc">Costo por inspección realizada</span>
           <!-- id="ci" → multiplicado por el número de inspecciones realizadas -->
           <input type="number" id="ci" value="0.1" step="0.05" min="0">
         </div>
         <div class="param-row">
           <label>cₙ</label>
-          <span class="desc">Custo unitário de degradação natural</span>
+          <span class="desc">Costo unitario de degradación natural</span>
           <!-- id="cn" → penalización por tiempo en estado defectuoso (degradación natural) -->
           <input type="number" id="cn" value="0.04" step="0.01" min="0">
         </div>
         <div class="param-row">
           <label>cᶜ</label>
-          <span class="desc">Custo unitário de choque externo</span>
+          <span class="desc">Costo unitario de choque externo</span>
           <!-- id="cc" → penalización por tiempo en estado defectuoso (choque externo) -->
           <input type="number" id="cc" value="0.04" step="0.01" min="0">
         </div>
@@ -988,19 +988,19 @@
         <div class="group-label">VARIÁVEIS DE DECISÃO</div>
         <div class="param-row">
           <label>D</label>
-          <span class="desc">Intervalo entre inspeções periódicas</span>
+          <span class="desc">Intervalo entre inspecciones periódicas</span>
           <!-- id="D" → intervalo entre inspecciones. Define los subintervalos [(i-1)D, iD) -->
           <input type="number" id="D" value="0.9092" step="0.01" min="0.01">
         </div>
         <div class="param-row">
           <label>T</label>
-          <span class="desc">Idade de substituição preventiva</span>
+          <span class="desc">Edad de sustitución preventiva</span>
           <!-- id="T" → edad de sustitución preventiva por tiempo. Define el fin del ciclo -->
           <input type="number" id="T" value="8" step="0.5" min="0.1">
         </div>
         <div class="param-row">
           <label>K</label>
-          <span class="desc">Número de inspeções no ciclo</span>
+          <span class="desc">Número de inspecciones en el ciclo</span>
           <!-- id="K" → número de inspecciones. Debe cumplir K·D ≤ T (validado en runModel()) -->
           <input type="number" id="K" value="5" step="1" min="0" style="width:86px;">
         </div>
@@ -1031,7 +1031,7 @@
            · .progress-wrap (barra de progreso durante el cálculo)
            · .results-wrap (cards + tabla + formula-box al terminar)
            · .error-box (si hay error de validación o cálculo) -->
-    <div class="section-label" id="sec-resultado">RESULTADO — TAXA DE CUSTO C(K, &Delta;, T)</div>
+    <div class="section-label" id="sec-resultado">RESULTADO — TASA DE COSTO C(K, &Delta;, T)</div>
     <div id="outputArea">
       <!-- Estado inicial: ícono decorativo SVG de documento + mensaje instructivo.
            Este contenido es reemplazado por JS en showOutput() al calcular o resetear. -->
@@ -1042,7 +1042,7 @@
           <line x1="16" y1="26" x2="28" y2="26" stroke="#5a6070" stroke-width="1.5"/>
           <line x1="16" y1="32" x2="24" y2="32" stroke="#5a6070" stroke-width="1.5"/>
         </svg>
-        <p>Configure os parâmetros acima<br>e clique em CALCULAR</p>
+        <p>Configure los parámetros arriba<br>y haga clic en CALCULAR</p>
       </div>
     </div>
 
@@ -1351,28 +1351,28 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 // KDTS — MODELO DE TAXA DE CUSTO COM DELAY-TIME
 // ═══════════════════════════════════════════════════════════════════════════════
-// O modelo matemático KDTS para calcular a taxa de custo de uma política de 
-// manutenção baseada em delay-time, com degradação natural
-// (mistura Weibull) e choques externos (Poisson/Exponencial).
+// El modelo matemático KDTS para calcular la tasa de costo de una política de
+// mantenimiento basada en delay-time, con degradación natural
+// (mezcla Weibull) y choques externos (Poisson/Exponencial).
 //
 // ESTRUTURA:
-//   1. Funções de integração numérica  (integrate, integrate2)
-//   2. Função principal do modelo      (computeCost)
-//      ├── Distribuições de probabilidade
-//      ├── Tabela memoizada de Rx(t)
-//      └── 9 cenários de falha/renovação
-//   3. Funções de interface (UI)
-//      ├── getParams()     — lê os inputs do formulário
-//      ├── runModel()      — valida, dispara Web Worker e exibe resultado
-//      ├── showOutput()    — atualiza a área de resultado no DOM
-//      ├── setRunning()    — alterna estado do botão (calculando / pronto)
-//      ├── resetForm()     — restaura todos os campos aos valores padrão
-//      ├── scrollTo()      — navegação suave pelo sidebar
-//      └── showToast()     — exibe notificação temporária no canto da tela
-//   4. Funções de modal
-//      ├── openModal()     — abre um modal de fórmulas
-//      ├── closeModal()    — fecha um modal
-//      └── closeModalOut() — fecha ao clicar fora do modal
+//   1. Funciones de integración numérica  (integrate, integrate2)
+//   2. Función principal del modelo      (computeCost)
+//      ├── Distribuciones de probabilidad
+//      ├── Tabla memoizada de Rx(t)
+//      └── 9 escenarios de falla/renovación
+//   3. Funciones de interfaz (UI)
+//      ├── getParams()     — lee los inputs del formulario
+//      ├── runModel()      — valida, lanza Web Worker y muestra resultado
+//      ├── showOutput()    — actualiza el área de resultado en el DOM
+//      ├── setRunning()    — alterna estado del botón (calculando / listo)
+//      ├── resetForm()     — restaura todos los campos a los valores por defecto
+//      ├── scrollTo()      — navegación suave por el sidebar
+//      └── showToast()     — muestra notificación temporal en la esquina de la pantalla
+//   4. Funciones de modal
+//      ├── openModal()     — abre un modal de fórmulas
+//      ├── closeModal()    — cierra un modal
+//      └── closeModalOut() — cierra al hacer clic fuera del modal
 // ═══════════════════════════════════════════════════════════════════════════════
 
 
@@ -1380,67 +1380,67 @@
 
 /**
  * integrate(f, a, b, n)
- * Integração numérica simples pelo método de Simpson 1/3.
+ * Integración numérica simple por el método de Simpson 1/3.
  *
- * @param {Function} f  - Função a integrar: f(x) → número
- * @param {number}   a  - Limite inferior do intervalo
- * @param {number}   b  - Limite superior do intervalo
- * @param {number}   n  - Número de subintervalos (padrão: 400; deve ser par)
- * @returns {number}      Valor aproximado da integral de f entre a e b
+ * @param {Function} f  - Función a integrar: f(x) → número
+ * @param {number}   a  - Límite inferior del intervalo
+ * @param {number}   b  - Límite superior del intervalo
+ * @param {number}   n  - Número de subintervalos (por defecto: 400; debe ser par)
+ * @returns {number}      Valor aproximado de la integral de f entre a y b
  *
  * Fórmula de Simpson 1/3:
  *   ∫f dx ≈ (h/3) * [f(a) + 4f(x₁) + 2f(x₂) + 4f(x₃) + ... + f(b)]
- * onde h = (b-a)/n e os coeficientes alternam 4, 2, 4, 2, ...
+ * donde h = (b-a)/n y los coeficientes alternan 4, 2, 4, 2, ...
  */
 function integrate(f, a, b, n = 400) {
-  // Se o intervalo for inválido (a ≥ b), a integral é zero
+  // Si el intervalo es inválido (a ≥ b), la integral es cero
   if (a >= b) return 0;
 
-  const h = (b - a) / n;          // Tamanho de cada subintervalo
-  let s = f(a) + f(b);             // Soma começa com os extremos (coef. 1)
+  const h = (b - a) / n;          // Tamaño de cada subintervalo
+  let s = f(a) + f(b);             // La suma comienza con los extremos (coef. 1)
 
-  // Pontos intermediários: coeficiente 4 para índices ímpares, 2 para pares
+  // Puntos intermedios: coeficiente 4 para índices impares, 2 para pares
   for (let i = 1; i < n; i++) s += (i % 2 === 0 ? 2 : 4) * f(a + i * h);
 
-  return s * h / 3;                // Aplica o fator final h/3
+  return s * h / 3;                // Aplica el factor final h/3
 }
 
 /**
  * integrate2(f, ax, bx, upper, nx, nh)
- * Integração dupla numérica: ∫∫ f(h, x) dh dx
- * O limite superior da integral interna (em h) depende de x: upper(x).
+ * Integración doble numérica: ∫∫ f(h, x) dh dx
+ * El límite superior de la integral interna (en h) depende de x: upper(x).
  *
- * @param {Function} f      - Função bivariada: f(h, x) → número
- * @param {number}   ax     - Limite inferior de x
- * @param {number}   bx     - Limite superior de x
- * @param {Function} upper  - Limite superior de h em função de x: upper(x) → número
- * @param {number}   nx     - Pontos para a integral externa em x (padrão: 100)
- * @param {number}   nh     - Pontos para a integral interna em h (padrão: 100)
- * @returns {number}          Valor aproximado da integral dupla
+ * @param {Function} f      - Función bivariada: f(h, x) → número
+ * @param {number}   ax     - Límite inferior de x
+ * @param {number}   bx     - Límite superior de x
+ * @param {Function} upper  - Límite superior de h en función de x: upper(x) → número
+ * @param {number}   nx     - Puntos para la integral externa en x (por defecto: 100)
+ * @param {number}   nh     - Puntos para la integral interna en h (por defecto: 100)
+ * @returns {number}          Valor aproximado de la integral doble
  *
- * Estratégia: para cada ponto x, calcula a integral interna em h usando Simpson,
- * depois acumula os resultados na integral externa (também Simpson).
+ * Estrategia: para cada punto x, calcula la integral interna en h usando Simpson,
+ * luego acumula los resultados en la integral externa (también Simpson).
  */
 function integrate2(f, ax, bx, upper, nx = 100, nh = 100) {
-  if (ax >= bx) return 0;          // Intervalo externo inválido → zero
+  if (ax >= bx) return 0;          // Intervalo externo inválido → cero
 
-  const hx = (bx - ax) / nx;      // Passo no eixo x
+  const hx = (bx - ax) / nx;      // Paso en el eje x
   let sx = 0;
 
   for (let i = 0; i <= nx; i++) {
-    const x  = ax + i * hx;        // Ponto atual em x
-    const bu = upper(x);            // Limite superior de h para este x
-    if (bu <= 0) continue;          // Se o intervalo interno for nulo, pula
+    const x  = ax + i * hx;        // Punto actual en x
+    const bu = upper(x);            // Límite superior de h para este x
+    if (bu <= 0) continue;          // Si el intervalo interno es nulo, omite
 
     // Integral interna: ∫₀^{upper(x)} f(h, x) dh
     const inner = integrate(h => f(h, x), 0, bu, nh);
 
-    // Coeficiente de Simpson para o eixo externo
+    // Coeficiente de Simpson para el eje externo
     const w = (i === 0 || i === nx) ? 1 : (i % 2 === 0 ? 2 : 4);
     sx += w * inner;
   }
 
-  return sx * hx / 3;              // Fator final da regra de Simpson externa
+  return sx * hx / 3;              // Factor final de la regla de Simpson externa
 }
 
 
@@ -1448,129 +1448,129 @@ function integrate2(f, ax, bx, upper, nx = 100, nh = 100) {
 
 /**
  * computeCost(p, K)
- * Calcula a taxa de custo c(D, T, K) do modelo KDTS.
- * Tradução fiel do modelo analítico Python (função kdts()).
+ * Calcula la tasa de costo c(D, T, K) del modelo KDTS.
+ * Traducción fiel del modelo analítico Python (función kdts()).
  *
- * A taxa de custo é a razão entre o custo esperado por ciclo e
- * a duração esperada do ciclo (Teorema de Renovação):
- *   c(D, T, K) = E[Custo] / E[Vida] = EC_total / EV_total
+ * La tasa de costo es la razón entre el costo esperado por ciclo y
+ * la duración esperada del ciclo (Teorema de Renovación):
+ *   c(D, T, K) = E[Costo] / E[Vida] = EC_total / EV_total
  *
- * @param {Object} p  - Objeto com todos os parâmetros do modelo:
- *   n1, b1       Escala e forma Weibull — componente fraco
- *   n2, b2       Escala e forma Weibull — componente forte
- *   a            Proporção da população fraca (mistura)
- *   l            Taxa exponencial do delay-time (λ)
- *   u            Taxa de chegada de choques externos (μ)
- *   ci           Custo por inspeção
- *   cp           Custo de substituição preventiva
- *   cf           Custo de substituição corretiva (falha)
- *   cn           Custo unitário de penalização por degradação natural
- *   cc           Custo unitário de penalização por choque
- *   D            Intervalo entre inspeções
- *   T            Idade de substituição preventiva
- * @param {number} K  - Número de inspeções no ciclo
- * @returns {number}    Taxa de custo c(D, T, K); Infinity se EV_total = 0
+ * @param {Object} p  - Objeto con todos los parámetros del modelo:
+ *   n1, b1       Escala y forma Weibull — componente débil
+ *   n2, b2       Escala y forma Weibull — componente fuerte
+ *   a            Proporción de la población débil (mezcla)
+ *   l            Tasa exponencial del delay-time (λ)
+ *   u            Tasa de llegada de choques externos (μ)
+ *   ci           Costo por inspección
+ *   cp           Costo de sustitución preventiva
+ *   cf           Costo de sustitución correctiva (falla)
+ *   cn           Costo unitario de penalización por degradación natural
+ *   cc           Costo unitario de penalización por choque
+ *   D            Intervalo entre inspecciones
+ *   T            Edad de sustitución preventiva
+ * @param {number} K  - Número de inspecciones en el ciclo
+ * @returns {number}    Tasa de costo c(D, T, K); Infinity si EV_total = 0
  */
 function computeCost(p, K) {
   const { n1, b1, n2, b2, a, l, u, ci, cp, cf, cn, cc, D, T } = p;
 
-  // ── 2.1 DISTRIBUIÇÕES DE PROBABILIDADE ─────────────────────────────────
+  // ── 2.1 DISTRIBUCIONES DE PROBABILIDAD ─────────────────────────────────
 
-  // PDF Weibull — componente fraco (fração 'a' da população, vida curta)
+  // PDF Weibull — componente débil (fracción 'a' de la población, vida corta)
   // f₁(x) = (β₁/η₁) · (x/η₁)^(β₁-1) · exp[-(x/η₁)^β₁]
   const f_debil = x => (b1/n1) * Math.pow(x/n1, b1-1) * Math.exp(-Math.pow(x/n1, b1));
 
-  // PDF Weibull — componente forte (fração '1-a' da população, vida longa)
+  // PDF Weibull — componente fuerte (fracción '1-a' de la población, vida larga)
   // f₂(x) = (β₂/η₂) · (x/η₂)^(β₂-1) · exp[-(x/η₂)^β₂]
   const f_forte = x => (b2/n2) * Math.pow(x/n2, b2-1) * Math.exp(-Math.pow(x/n2, b2));
 
-  // PDF de mixtura — combina as duas populações com peso 'a' e '1-a'
+  // PDF de mezcla — combina las dos poblaciones con peso 'a' y '1-a'
   // fx(x) = a·f₁(x) + (1-a)·f₂(x)
   const fx = x => a*f_debil(x) + (1-a)*f_forte(x);
 
-  // ── 2.2 TABELA MEMOIZADA DE Rx(t) ──────────────────────────────────────
-  // Rx(t) = P(X > t) = ∫ₜ^∞ fx(x) dx  (confiabilidade por degradação natural)
-  // Pré-calcular Rx em uma tabela de 2000 pontos uniformes de 0 até
-  // tMax, usando integração trapezoidal acumulada de trás para frente.
-  // Depois, uma interpolação linear fornece Rx(t) instantaneamente.
+  // ── 2.2 TABLA MEMOIZADA DE Rx(t) ──────────────────────────────────────
+  // Rx(t) = P(X > t) = ∫ₜ^∞ fx(x) dx  (confiabilidad por degradación natural)
+  // Precalcular Rx en una tabla de 2000 puntos uniformes de 0 hasta
+  // tMax, usando integración trapezoidal acumulada de atrás hacia adelante.
+  // Luego, una interpolación lineal proporciona Rx(t) instantáneamente.
 
-  const tMax  = Math.max(T + 20, 30);  // Limite superior: garante capturar toda a distribuição
-  const RX_N  = 2000;                   // Número de pontos na tabela
-  const RX_dt = tMax / RX_N;            // Espaçamento entre pontos
+  const tMax  = Math.max(T + 20, 30);  // Límite superior: garantiza capturar toda la distribución
+  const RX_N  = 2000;                   // Número de puntos en la tabla
+  const RX_dt = tMax / RX_N;            // Espaciado entre puntos
 
-  const RX_table = new Float64Array(RX_N + 1);  // Tabela de valores Rx(i·dt)
-  const fxVals   = new Float64Array(RX_N + 1);  // Cache dos valores fx(i·dt)
+  const RX_table = new Float64Array(RX_N + 1);  // Tabla de valores Rx(i·dt)
+  const fxVals   = new Float64Array(RX_N + 1);  // Caché de los valores fx(i·dt)
 
-  // Passo 1: pré-calcular fx em todos os pontos da grade
+  // Paso 1: precalcular fx en todos los puntos de la malla
   for (let i = 0; i <= RX_N; i++) fxVals[i] = fx(i * RX_dt);
 
-  // Passo 2: integrar de trás para frente (de tMax → 0) pelo método trapezoidal
+  // Paso 2: integrar de atrás hacia adelante (de tMax → 0) por el método trapezoidal
   // Rx(t) = Rx(t + dt) + (fx(t) + fx(t+dt)) / 2 · dt
   let acc = 0;
-  for (let i = RX_N; i >= 0; i--) RX_table[i] = 0;  // Inicializa tabela com zeros
+  for (let i = RX_N; i >= 0; i--) RX_table[i] = 0;  // Inicializa tabla con ceros
   for (let i = RX_N - 1; i >= 0; i--) {
     acc += 0.5 * (fxVals[i] + fxVals[i+1]) * RX_dt;
-    RX_table[i] = acc;   // Rx(i·dt) = área acumulada de i·dt até tMax
+    RX_table[i] = acc;   // Rx(i·dt) = área acumulada de i·dt hasta tMax
   }
 
   /**
-   * Rx(t) — confiabilidade por degradação natural em t
-   * Usa interpolação linear na tabela pré-calculada acima.
-   * Complexidade: O(1) por chamada (versus O(n) sem memoização).
+   * Rx(t) — confiabilidad por degradación natural en t
+   * Usa interpolación lineal en la tabla precalculada arriba.
+   * Complejidad: O(1) por llamada (versus O(n) sin memoización).
    */
   const Rx = t => {
-    if (t <= 0)    return RX_table[0];   // Rx(0) = 1 (sobrevivência total)
-    if (t >= tMax) return 0;             // Além de tMax, a PDF já é ~0
+    if (t <= 0)    return RX_table[0];   // Rx(0) = 1 (supervivencia total)
+    if (t >= tMax) return 0;             // Más allá de tMax, la PDF ya es ~0
 
-    const idx  = t / RX_dt;             // Posição contínua na tabela
+    const idx  = t / RX_dt;             // Posición continua en la tabla
     const i    = Math.floor(idx);        // Índice inferior
-    const frac = idx - i;               // Fração para interpolação
+    const frac = idx - i;               // Fracción para interpolación
 
     if (i >= RX_N) return 0;
-    // Interpolação linear entre RX_table[i] e RX_table[i+1]
+    // Interpolación lineal entre RX_table[i] y RX_table[i+1]
     return RX_table[i] + frac * (RX_table[i+1] - RX_table[i]);
   };
 
-  // PDF exponencial do tempo até o primeiro choque externo
+  // PDF exponencial del tiempo hasta el primer choque externo
   // fz(z) = μ·e^(-μz)
   const fz = z => u * Math.exp(-u*z);
 
-  // Confiabilidade ante choques (probabilidade de nenhum choque até z)
+  // Confiabilidad ante choques (probabilidad de ningún choque hasta z)
   // Rz(z) = e^(-μz)
   const Rz = z => Math.exp(-u*z);
 
-  // PDF exponencial do delay-time (duração do período P-F)
+  // PDF exponencial del delay-time (duración del período P-F)
   // fh(h) = λ·e^(-λh)
   const fh = h => l * Math.exp(-l*h);
 
-  // Confiabilidade do delay-time (probabilidade de não falhar em h dado defeito)
+  // Confiabilidad del delay-time (probabilidad de no fallar en h dado defecto)
   // Rh(h) = e^(-λh)
   const Rh = h => Math.exp(-l*h);
 
-  // CDF do delay-time — reservada para extensões futuras do modelo
+  // CDF del delay-time — reservada para extensiones futuras del modelo
   const Fh = h => 1 - Math.exp(-l*h);
 
-  // ── 2.3 ACUMULADORES DOS 9 CENÁRIOS ────────────────────────────────────
-  let P_total  = 0;  // Soma das probabilidades de todos os cenários (deve ser ≈ 1)
-  let EC_total = 0;  // Esperança do custo total do ciclo
-  let EV_total = 0;  // Esperança da duração do ciclo (vida esperada)
+  // ── 2.3 ACUMULADORES DE LOS 9 ESCENARIOS ────────────────────────────────
+  let P_total  = 0;  // Suma de las probabilidades de todos los escenarios (debe ser ≈ 1)
+  let EC_total = 0;  // Esperanza del costo total del ciclo
+  let EV_total = 0;  // Esperanza de la duración del ciclo (vida esperada)
 
   // ═══════════════════════════════════════════════════════════════════════
-  // CENÁRIOS 1 e 2 — Degradação natural nas inspeções periódicas (i = 1..K)
+  // ESCENARIOS 1 y 2 — Degradación natural en las inspecciones periódicas (i = 1..K)
   // ═══════════════════════════════════════════════════════════════════════
 
-  // CENÁRIO 1 — Defeito natural surge em x ∈ [(i-1)D, iD) e falha em x+h < iD
-  // O componente falha ANTES da inspeção i → substituição corretiva (cf)
-  // Custo: cf + ci·(i-1) inspeções realizadas + cn·h penalização por latência
-  // Vida: x + h (instante da falha)
+  // ESCENARIO 1 — Defecto natural surge en x ∈ [(i-1)D, iD) y falla en x+h < iD
+  // El componente falla ANTES de la inspección i → sustitución correctiva (cf)
+  // Costo: cf + ci·(i-1) inspecciones realizadas + cn·h penalización por latencia
+  // Vida: x + h (instante de la falla)
   for (let i = 1; i <= K; i++) {
-    const lo = (i-1)*D, hi = i*D;  // Intervalo da i-ésima inspeção
+    const lo = (i-1)*D, hi = i*D;  // Intervalo de la i-ésima inspección
 
-    // p1: probabilidade de ocorrer este cenário na inspeção i
+    // p1: probabilidad de ocurrir este escenario en la inspección i
     const p1  = integrate2((h,x) => Rz(x)*fx(x)*fh(h),                             lo, hi, x => i*D - x);
-    // ec1: custo esperado — cf + inspeções anteriores + penalização natural
+    // ec1: costo esperado — cf + inspecciones anteriores + penalización natural
     const ec1 = integrate2((h,x) => (cf + ci*(i-1) + cn*h)*Rz(x)*fx(x)*fh(h),      lo, hi, x => i*D - x);
-    // ev1: vida esperada — tempo até a falha = x + h
+    // ev1: vida esperada — tiempo hasta la falla = x + h
     const ev1 = integrate2((h,x) => (x+h)*Rz(x)*fx(x)*fh(h),                       lo, hi, x => i*D - x);
 
     P_total  += p1;
@@ -1578,18 +1578,18 @@ function computeCost(p, K) {
     EV_total += ev1;
   }
 
-  // CENÁRIO 2 — Defeito natural surge em x ∈ [(i-1)D, iD) mas NÃO falha até iD
-  // O defeito É DETECTADO na inspeção i → substituição preventiva (cp)
-  // Custo: cp + ci·i inspeções + cn·(iD - x) penalização acumulada até detecção
-  // Vida: iD (instante da inspeção)
+  // ESCENARIO 2 — Defecto natural surge en x ∈ [(i-1)D, iD) pero NO falla hasta iD
+  // El defecto ES DETECTADO en la inspección i → sustitución preventiva (cp)
+  // Costo: cp + ci·i inspecciones + cn·(iD - x) penalización acumulada hasta detección
+  // Vida: iD (instante de la inspección)
   for (let i = 1; i <= K; i++) {
     const lo = (i-1)*D, hi = i*D;
 
-    // p2: probabilidade de o defeito sobreviver até a inspeção i
+    // p2: probabilidad de que el defecto sobreviva hasta la inspección i
     const p2  = integrate(x => Rz(x)*fx(x)*Rh(i*D - x),                            lo, hi);
-    // ec2: custo esperado — cp + todas as i inspeções + penalização até detecção
+    // ec2: costo esperado — cp + todas las i inspecciones + penalización hasta detección
     const ec2 = integrate(x => (cp + ci*i + cn*(i*D - x))*Rz(x)*fx(x)*Rh(i*D - x), lo, hi);
-    // ev2: vida esperada — fixada em iD (renovação ocorre na inspeção)
+    // ev2: vida esperada — fijada en iD (renovación ocurre en la inspección)
     const ev2 = (i*D) * p2;
 
     P_total  += p2;
@@ -1598,12 +1598,12 @@ function computeCost(p, K) {
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // CENÁRIOS 3 e 4 — Degradação natural no intervalo final (K·D, T]
+  // ESCENARIOS 3 y 4 — Degradación natural en el intervalo final (K·D, T]
   // ═══════════════════════════════════════════════════════════════════════
 
-  // CENÁRIO 3 — Defeito natural surge em x ∈ (K·D, T] e falha em x+h < T
-  // Falha no intervalo final, após todas as K inspeções → substituição corretiva
-  // Custo: cf + ci·K + cn·h
+  // ESCENARIO 3 — Defecto natural surge en x ∈ (K·D, T] y falla en x+h < T
+  // Falla en el intervalo final, tras todas las K inspecciones → sustitución correctiva
+  // Costo: cf + ci·K + cn·h
   // Vida: x + h
   {
     const p3  = integrate2((h,x) => Rz(x)*fx(x)*fh(h),                             K*D, T, x => T - x);
@@ -1614,9 +1614,9 @@ function computeCost(p, K) {
     EV_total += ev3;
   }
 
-  // CENÁRIO 4 — Defeito natural surge em x ∈ (K·D, T] mas sobrevive até T
-  // Defeito detectado na substituição preventiva de idade T
-  // Custo: cp + ci·K + cn·(T - x) penalização até T
+  // ESCENARIO 4 — Defecto natural surge en x ∈ (K·D, T] pero sobrevive hasta T
+  // Defecto detectado en la sustitución preventiva de edad T
+  // Costo: cp + ci·K + cn·(T - x) penalización hasta T
   // Vida: T
   {
     const p4  = integrate(x => Rz(x)*fx(x)*Rh(T - x),                              K*D, T);
@@ -1628,12 +1628,12 @@ function computeCost(p, K) {
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // CENÁRIOS 5 e 6 — Choque externo nas inspeções periódicas (i = 1..K)
+  // ESCENARIOS 5 y 6 — Choque externo en las inspecciones periódicas (i = 1..K)
   // ═══════════════════════════════════════════════════════════════════════
 
-  // CENÁRIO 5 — Choque ocorre em z ∈ [(i-1)D, iD) e falha em z+h < iD
-  // Falha por choque ANTES da inspeção → substituição corretiva
-  // Custo: cf + ci·(i-1) + cc·h penalização por latência do choque
+  // ESCENARIO 5 — Choque ocurre en z ∈ [(i-1)D, iD) y falla en z+h < iD
+  // Falla por choque ANTES de la inspección → sustitución correctiva
+  // Costo: cf + ci·(i-1) + cc·h penalización por latencia del choque
   // Vida: z + h
   for (let i = 1; i <= K; i++) {
     const lo = (i-1)*D, hi = i*D;
@@ -1647,9 +1647,9 @@ function computeCost(p, K) {
     EV_total += ev5;
   }
 
-  // CENÁRIO 6 — Choque ocorre em z ∈ [(i-1)D, iD) mas não falha antes de iD
-  // Choque detectado na inspeção i → substituição preventiva
-  // Custo: cp + ci·i + cc·(iD - z)
+  // ESCENARIO 6 — Choque ocurre en z ∈ [(i-1)D, iD) pero no falla antes de iD
+  // Choque detectado en la inspección i → sustitución preventiva
+  // Costo: cp + ci·i + cc·(iD - z)
   // Vida: iD
   for (let i = 1; i <= K; i++) {
     const lo = (i-1)*D, hi = i*D;
@@ -1664,12 +1664,12 @@ function computeCost(p, K) {
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // CENÁRIOS 7 e 8 — Choque externo no intervalo final (K·D, T]
+  // ESCENARIOS 7 y 8 — Choque externo en el intervalo final (K·D, T]
   // ═══════════════════════════════════════════════════════════════════════
 
-  // CENÁRIO 7 — Choque em z ∈ (K·D, T] e falha z+h < T
-  // Falha por choque no intervalo final → substituição corretiva
-  // Custo: cf + ci·K + cc·h
+  // ESCENARIO 7 — Choque en z ∈ (K·D, T] y falla z+h < T
+  // Falla por choque en el intervalo final → sustitución correctiva
+  // Costo: cf + ci·K + cc·h
   // Vida: z + h
   {
     const p7  = integrate2((h,z) => Rx(z)*fz(z)*fh(h),                             K*D, T, z => T - z);
@@ -1680,9 +1680,9 @@ function computeCost(p, K) {
     EV_total += ev7;
   }
 
-  // CENÁRIO 8 — Choque em z ∈ (K·D, T] mas sobrevive até T
-  // Choque detectado na substituição por idade T → preventiva
-  // Custo: cp + ci·K + cc·(T - z)
+  // ESCENARIO 8 — Choque en z ∈ (K·D, T] pero sobrevive hasta T
+  // Choque detectado en la sustitución por edad T → preventiva
+  // Costo: cp + ci·K + cc·(T - z)
   // Vida: T
   {
     const p8  = integrate(z => fz(z)*Rx(z)*Rh(T - z),                              K*D, T);
@@ -1694,14 +1694,14 @@ function computeCost(p, K) {
   }
 
   // ═══════════════════════════════════════════════════════════════════════
-  // CENÁRIO 9 — Nenhum defeito até T: substituição preventiva bem-sucedida
+  // ESCENARIO 9 — Ningún defecto hasta T: sustitución preventiva exitosa
   // ═══════════════════════════════════════════════════════════════════════
-  // O componente chega a T sem defeito natural (Rx(T)) nem choque (Rz(T))
-  // Substituição puramente preventiva por idade
-  // Custo: cp + ci·K (todas as K inspeções foram realizadas sem achar nada)
+  // El componente llega a T sin defecto natural (Rx(T)) ni choque (Rz(T))
+  // Sustitución puramente preventiva por edad
+  // Costo: cp + ci·K (todas las K inspecciones se realizaron sin encontrar nada)
   // Vida: T
   {
-    const p9  = Rz(T) * Rx(T);           // Prob. de nenhum defeito até T
+    const p9  = Rz(T) * Rx(T);           // Prob. de ningún defecto hasta T
     const ec9 = (cp + ci*K) * p9;
     const ev9 = T * p9;
     P_total  += p9;
@@ -1709,8 +1709,8 @@ function computeCost(p, K) {
     EV_total += ev9;
   }
 
-  // Taxa de custo final: razão entre custo esperado e vida esperada
-  // Se EV_total = 0 (parametrização inválida), retorna Infinity
+  // Tasa de costo final: razón entre costo esperado y vida esperada
+  // Si EV_total = 0 (parametrización inválida), retorna Infinity
   return EV_total > 0 ? EC_total / EV_total : Infinity;
 }
 
@@ -1719,67 +1719,67 @@ function computeCost(p, K) {
 
 /**
  * getParams()
- * Lê todos os valores dos campos de input do formulário HTML e os retorna
- * como um objeto JavaScript com os nomes dos parâmetros do modelo.
- * O operador unário '+' converte a string do input para número.
+ * Lee todos los valores de los campos de input del formulario HTML y los retorna
+ * como un objeto JavaScript con los nombres de los parámetros del modelo.
+ * El operador unario '+' convierte el string del input a número.
  *
- * @returns {Object} Objeto com todos os parâmetros: n1, b1, n2, b2, a, l, u,
+ * @returns {Object} Objeto con todos los parámetros: n1, b1, n2, b2, a, l, u,
  *                   ci, cp, cf, cn, cc, D, T, K
  */
 function getParams() {
   return {
-    n1: +document.getElementById('n1').value,  // Escala Weibull fraco
-    b1: +document.getElementById('b1').value,  // Forma Weibull fraco
-    n2: +document.getElementById('n2').value,  // Escala Weibull forte
-    b2: +document.getElementById('b2').value,  // Forma Weibull forte
-    a:  +document.getElementById('a').value,   // Proporção da mistura
-    l:  +document.getElementById('l').value,   // Taxa do delay-time (λ)
-    u:  +document.getElementById('u').value,   // Taxa de chegada de choques (μ)
-    ci: +document.getElementById('ci').value,  // Custo por inspeção
-    cp: +document.getElementById('cp').value,  // Custo substituição preventiva
-    cf: +document.getElementById('cf').value,  // Custo substituição corretiva
-    cn: +document.getElementById('cn').value,  // Penalização degradação natural
-    cc: +document.getElementById('cc').value,  // Penalização choque externo
-    D:  +document.getElementById('D').value,   // Intervalo entre inspeções
-    T:  +document.getElementById('T').value,   // Idade de substituição preventiva
-    K:  +document.getElementById('K').value,   // Número de inspeções no ciclo
+    n1: +document.getElementById('n1').value,  // Escala Weibull débil
+    b1: +document.getElementById('b1').value,  // Forma Weibull débil
+    n2: +document.getElementById('n2').value,  // Escala Weibull fuerte
+    b2: +document.getElementById('b2').value,  // Forma Weibull fuerte
+    a:  +document.getElementById('a').value,   // Proporción de la mezcla
+    l:  +document.getElementById('l').value,   // Tasa del delay-time (λ)
+    u:  +document.getElementById('u').value,   // Tasa de llegada de choques (μ)
+    ci: +document.getElementById('ci').value,  // Costo por inspección
+    cp: +document.getElementById('cp').value,  // Costo sustitución preventiva
+    cf: +document.getElementById('cf').value,  // Costo sustitución correctiva
+    cn: +document.getElementById('cn').value,  // Penalización degradación natural
+    cc: +document.getElementById('cc').value,  // Penalización choque externo
+    D:  +document.getElementById('D').value,   // Intervalo entre inspecciones
+    T:  +document.getElementById('T').value,   // Edad de sustitución preventiva
+    K:  +document.getElementById('K').value,   // Número de inspecciones en el ciclo
   };
 }
 
 /**
  * runModel()
- * Função principal disparada pelo botão CALCULAR.
- * Fluxo:
- *   1. Lê os parâmetros com getParams()
- *   2. Valida os valores (K, D, T devem ser válidos e satisfazer K·D ≤ T)
- *   3. Ativa o estado "calculando" (spinner no botão)
- *   4. Inicia animação da barra de progresso
- *   5. Cria um Web Worker com o código de computeCost serializado
- *      → O Worker roda em thread separada, evitando travar o navegador
- *   6. Ao receber o resultado do Worker, exibe os cards e a tabela de resultado
- *   7. Em caso de erro, exibe mensagem de erro
+ * Función principal disparada por el botón CALCULAR.
+ * Flujo:
+ *   1. Lee los parámetros con getParams()
+ *   2. Valida los valores (K, D, T deben ser válidos y satisfacer K·D ≤ T)
+ *   3. Activa el estado "calculando" (spinner en el botón)
+ *   4. Inicia animación de la barra de progreso
+ *   5. Crea un Web Worker con el código de computeCost serializado
+ *      → El Worker corre en thread separado, evitando bloquear el navegador
+ *   6. Al recibir el resultado del Worker, muestra los cards y la tabla de resultado
+ *   7. En caso de error, muestra mensaje de error
  */
 function runModel() {
   const p = getParams();
   const { K, D, T } = p;
 
-  // Validação básica dos parâmetros de decisão
+  // Validación básica de los parámetros de decisión
   if (isNaN(K) || isNaN(D) || isNaN(T) || D <= 0 || T <= 0 || K < 0) {
     showOutput(`<div class="error-box">⚠ Parâmetros inválidos. Verifique K, D e T.</div>`);
     return;
   }
-  // Restrição estrutural do modelo: todas as K inspeções devem caber antes de T
+  // Restricción estructural del modelo: todas las K inspecciones deben caber antes de T
   if (K * D > T + 1e-9) {
     showOutput(`<div class="error-box">⚠ Restrição violada: K·D = ${(K*D).toFixed(4)} > T = ${T}. Reduza K ou aumente T.</div>`);
     return;
   }
 
-  setRunning(true);   // Desativa o botão e mostra spinner
+  setRunning(true);   // Desactiva el botón y muestra spinner
 
-  // Exibe a barra de progresso inicial
+  // Muestra la barra de progreso inicial
   showOutput(`<div class="progress-wrap"><div class="progress-top"><span>Calculando c(D=${D}, T=${T}, K=${K})...</span><span id="progPct">—</span></div><div class="progress-track"><div class="progress-fill" id="progFill" style="width:0%;"></div></div></div>`);
 
-  // Animação da barra: avança 2% a cada 80ms até 90% (o restante completa ao terminar)
+  // Animación de la barra: avanza 2% cada 80ms hasta 90% (el resto completa al terminar)
   let pct = 0;
   const animInterval = setInterval(() => {
     pct = Math.min(pct + 2, 90);
@@ -1787,41 +1787,41 @@ function runModel() {
     if (fill) fill.style.width = pct + '%';
   }, 80);
 
-  // Serializa as funções necessárias em uma string para o Web Worker
-  // O Worker não tem acesso ao escopo principal, por isso as funções
-  // são convertidas para string com .toString() e injetadas no código do Worker
+  // Serializa las funciones necesarias en un string para el Web Worker
+  // El Worker no tiene acceso al ámbito principal, por eso las funciones
+  // se convierten a string con .toString() y se inyectan en el código del Worker
   const workerCode = `
     ${integrate.toString()}
     ${integrate2.toString()}
     ${computeCost.toString()}
     self.onmessage = function(e) {
       const result = computeCost(e.data.p, e.data.K);
-      self.postMessage(result);   // Envia o resultado de volta ao thread principal
+      self.postMessage(result);   // Envía el resultado de vuelta al thread principal
     };
   `;
 
-  // Cria um Blob (arquivo virtual) com o código do Worker e gera uma URL temporária
+  // Crea un Blob (archivo virtual) con el código del Worker y genera una URL temporal
   const blob      = new Blob([workerCode], { type: 'application/javascript' });
   const workerUrl = URL.createObjectURL(blob);
-  const worker    = new Worker(workerUrl);  // Inicia o Worker em thread separada
+  const worker    = new Worker(workerUrl);  // Inicia el Worker en thread separado
 
-  // Callback executado quando o Worker termina e envia o resultado
+  // Callback ejecutado cuando el Worker termina y envía el resultado
   worker.onmessage = function(e) {
-    clearInterval(animInterval);       // Para a animação da barra
-    URL.revokeObjectURL(workerUrl);    // Libera a URL temporária da memória
-    worker.terminate();                // Encerra o Worker
+    clearInterval(animInterval);       // Detiene la animación de la barra
+    URL.revokeObjectURL(workerUrl);    // Libera la URL temporal de la memoria
+    worker.terminate();                // Cierra el Worker
 
-    const c = e.data;                  // Resultado: taxa de custo c(D, T, K)
+    const c = e.data;                  // Resultado: tasa de costo c(D, T, K)
 
-    // Completa a barra de progresso visualmente
+    // Completa la barra de progreso visualmente
     const fill = document.getElementById('progFill');
     if (fill) fill.style.width = '100%';
 
-    // Pequeno delay para a barra chegar a 100% antes de substituir pelo resultado
+    // Pequeño delay para que la barra llegue a 100% antes de reemplazar por el resultado
     setTimeout(() => {
-      setRunning(false);   // Reativa o botão
+      setRunning(false);   // Reactiva el botón
 
-      // Renderiza os cards de resultado e a tabela com os valores calculados
+      // Renderiza los cards de resultado y la tabla con los valores calculados
       showOutput(`
         <div class="results-wrap">
           <div class="summary-cards">
@@ -1856,7 +1856,7 @@ function runModel() {
     }, 200);
   };
 
-  // Callback de erro do Worker: limpa recursos e exibe mensagem
+  // Callback de error del Worker: limpia recursos y muestra mensaje
   worker.onerror = function(err) {
     clearInterval(animInterval);
     URL.revokeObjectURL(workerUrl);
@@ -1865,16 +1865,16 @@ function runModel() {
     showOutput(`<div class="error-box">⚠ Erro no cálculo: ${err.message}</div>`);
   };
 
-  // Envia os parâmetros ao Worker para iniciar o cálculo
+  // Envía los parámetros al Worker para iniciar el cálculo
   worker.postMessage({ p, K });
 }
 
 /**
  * showOutput(html)
- * Substitui o conteúdo da área de resultado (#outputArea) pelo HTML fornecido.
- * Usada para exibir a barra de progresso, os resultados ou mensagens de erro.
+ * Reemplaza el contenido del área de resultado (#outputArea) por el HTML proporcionado.
+ * Usada para mostrar la barra de progreso, los resultados o mensajes de error.
  *
- * @param {string} html - String HTML a ser inserida no DOM
+ * @param {string} html - String HTML a insertar en el DOM
  */
 function showOutput(html) {
   document.getElementById('outputArea').innerHTML = html;
@@ -1882,12 +1882,12 @@ function showOutput(html) {
 
 /**
  * setRunning(on)
- * Alterna o estado visual do botão CALCULAR entre "pronto" e "calculando".
- * Quando on=true: desativa o botão, substitui o ícone por um spinner animado
- *                 e muda o texto para "CALCULANDO...".
- * Quando on=false: reativa o botão, restaura o ícone ▶ e o texto original.
+ * Alterna el estado visual del botón CALCULAR entre "listo" y "calculando".
+ * Cuando on=true: desactiva el botón, reemplaza el ícono por un spinner animado
+ *                 y cambia el texto a "CALCULANDO...".
+ * Cuando on=false: reactiva el botón, restaura el ícono ▶ y el texto original.
  *
- * @param {boolean} on - true = modo calculando; false = modo pronto
+ * @param {boolean} on - true = modo calculando; false = modo listo
  */
 function setRunning(on) {
   const btn  = document.getElementById('btnRun');
@@ -1895,11 +1895,11 @@ function setRunning(on) {
   const text = document.getElementById('btnText');
   btn.disabled = on;
   if (on) {
-    // Troca o ícone ▶ por um spinner CSS animado
+    // Intercambia el ícono ▶ por un spinner CSS animado
     icon.outerHTML = '<span class="spinner" id="btnIcon"></span>';
     text.textContent = 'CALCULANDO...';
   } else {
-    // Restaura o ícone original
+    // Restaura el ícono original
     const el = document.getElementById('btnIcon');
     if (el) el.outerHTML = '<span id="btnIcon">▶</span>';
     text.textContent = 'CALCULAR TAXA DE CUSTO';
@@ -1908,28 +1908,28 @@ function setRunning(on) {
 
 /**
  * resetForm()
- * Restaura todos os campos do formulário para os valores padrão do modelo
- * (equivalentes aos valores do arquivo Python original) e limpa a área
- * de resultado exibindo o placeholder inicial.
+ * Restaura todos los campos del formulario a los valores por defecto del modelo
+ * (equivalentes a los valores del archivo Python original) y limpia el área
+ * de resultado mostrando el placeholder inicial.
  */
 function resetForm() {
-  document.getElementById('n1').value = '0.3';    // Escala Weibull fraco
-  document.getElementById('b1').value = '3';      // Forma Weibull fraco
-  document.getElementById('n2').value = '3';      // Escala Weibull forte
-  document.getElementById('b2').value = '3';      // Forma Weibull forte
-  document.getElementById('a').value  = '0.05';   // 5% da população é fraca
-  document.getElementById('l').value  = '1';      // Taxa delay-time λ = 1
-  document.getElementById('u').value  = '0.5';    // Taxa de choques μ = 0.5
-  document.getElementById('ci').value = '0.1';    // Custo por inspeção
-  document.getElementById('cp').value = '1';      // Custo preventivo
-  document.getElementById('cf').value = '5';      // Custo corretivo
-  document.getElementById('cn').value = '0.04';   // Penalização degradação
-  document.getElementById('cc').value = '0.04';   // Penalização choque
-  document.getElementById('D').value  = '0.9092'; // Intervalo entre inspeções
-  document.getElementById('T').value  = '8';      // Idade de substituição
-  document.getElementById('K').value  = '5';      // Número de inspeções
+  document.getElementById('n1').value = '0.3';    // Escala Weibull débil
+  document.getElementById('b1').value = '3';      // Forma Weibull débil
+  document.getElementById('n2').value = '3';      // Escala Weibull fuerte
+  document.getElementById('b2').value = '3';      // Forma Weibull fuerte
+  document.getElementById('a').value  = '0.05';   // 5% de la población es débil
+  document.getElementById('l').value  = '1';      // Tasa delay-time λ = 1
+  document.getElementById('u').value  = '0.5';    // Tasa de choques μ = 0.5
+  document.getElementById('ci').value = '0.1';    // Costo por inspección
+  document.getElementById('cp').value = '1';      // Costo preventivo
+  document.getElementById('cf').value = '5';      // Costo correctivo
+  document.getElementById('cn').value = '0.04';   // Penalización degradación
+  document.getElementById('cc').value = '0.04';   // Penalización choque
+  document.getElementById('D').value  = '0.9092'; // Intervalo entre inspecciones
+  document.getElementById('T').value  = '8';      // Edad de sustitución
+  document.getElementById('K').value  = '5';      // Número de inspecciones
 
-  // Restaura o placeholder gráfico na área de resultado
+  // Restaura el placeholder gráfico en el área de resultado
   showOutput(`<div class="placeholder">
     <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
       <rect x="8" y="8" width="32" height="32" rx="3" stroke="#5a6070" stroke-width="1.5"/>
@@ -1937,39 +1937,39 @@ function resetForm() {
       <line x1="16" y1="26" x2="28" y2="26" stroke="#5a6070" stroke-width="1.5"/>
       <line x1="16" y1="32" x2="24" y2="32" stroke="#5a6070" stroke-width="1.5"/>
     </svg>
-    <p>Configure os parâmetros acima<br>e clique em CALCULAR</p>
+    <p>Configure los parámetros arriba<br>y haga clic en CALCULAR</p>
   </div>`);
 }
 
 /**
  * scrollTo(id)
- * Navega suavemente até a seção com o id fornecido e marca o item do
- * sidebar como ativo (destaque visual com borda esquerda).
+ * Navega suavemente hasta la sección con el id proporcionado y marca el ítem del
+ * sidebar como activo (resalte visual con borde izquierdo).
  *
- * @param {string} id - ID do elemento HTML de destino (ex: 'sec-weibull')
+ * @param {string} id - ID del elemento HTML de destino (ej: 'sec-weibull')
  */
 function scrollTo(id) {
-  // Remove a classe 'active' de todos os itens do sidebar
+  // Elimina la clase 'active' de todos los ítems del sidebar
   document.querySelectorAll('.sidebar-item').forEach(e => e.classList.remove('active'));
-  // Marca o item clicado como ativo
+  // Marca el ítem clicado como activo
   event.currentTarget.classList.add('active');
-  // Rola a página suavemente até a seção
+  // Desplaza la página suavemente hasta la sección
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 /**
  * showToast(msg)
- * Exibe uma notificação temporária (toast) no canto inferior direito da tela
- * com a mensagem fornecida. Desaparece automaticamente após 3 segundos.
+ * Muestra una notificación temporal (toast) en la esquina inferior derecha de la pantalla
+ * con el mensaje proporcionado. Desaparece automáticamente tras 3 segundos.
  *
- * @param {string} msg - Texto a exibir na notificação
+ * @param {string} msg - Texto a mostrar en la notificación
  */
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.classList.add('show');                              // Torna visível (CSS transition)
-  setTimeout(() => t.classList.remove('show'), 3000);  // Remove após 3s
+  t.classList.add('show');                              // Lo hace visible (CSS transition)
+  setTimeout(() => t.classList.remove('show'), 3000);  // Elimina tras 3s
 }
 
 
@@ -1977,18 +1977,18 @@ function showToast(msg) {
 
 /**
  * openModal(id)
- * Abre o modal de fórmulas com o id fornecido:
- *   - Adiciona a classe 'open' ao overlay (torna visível via CSS)
- *   - Bloqueia o scroll do body enquanto o modal está aberto
- *   - Solicita ao MathJax que renderize as fórmulas LaTeX dentro do modal
+ * Abre el modal de fórmulas con el id proporcionado:
+ *   - Añade la clase 'open' al overlay (lo hace visible vía CSS)
+ *   - Bloquea el scroll del body mientras el modal está abierto
+ *   - Solicita a MathJax que renderice las fórmulas LaTeX dentro del modal
  *
- * @param {string} id - ID do elemento .modal-overlay (ex: 'modal-weibull')
+ * @param {string} id - ID del elemento .modal-overlay (ej: 'modal-weibull')
  */
 function openModal(id) {
   const overlay = document.getElementById(id);
   overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';   // Impede scroll da página de fundo
-  // MathJax renderiza as fórmulas LaTeX ($$...$$) dentro do modal recém-aberto
+  document.body.style.overflow = 'hidden';   // Impide scroll de la página de fondo
+  // MathJax renderiza las fórmulas LaTeX ($$...$$) dentro del modal recién abierto
   if (window.MathJax) {
     MathJax.typesetPromise([overlay]).catch(err => console.log(err));
   }
@@ -1996,29 +1996,29 @@ function openModal(id) {
 
 /**
  * closeModal(id)
- * Fecha o modal removendo a classe 'open' e restaurando o scroll do body.
+ * Cierra el modal eliminando la clase 'open' y restaurando el scroll del body.
  *
- * @param {string} id - ID do elemento .modal-overlay a fechar
+ * @param {string} id - ID del elemento .modal-overlay a cerrar
  */
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
-  document.body.style.overflow = '';   // Restaura scroll da página
+  document.body.style.overflow = '';   // Restaura scroll de la página
 }
 
 /**
  * closeModalOut(event, id)
- * Fecha o modal apenas se o clique ocorreu no overlay (fundo escuro),
- * e não dentro do conteúdo do modal. Permite fechar clicando fora.
+ * Cierra el modal solo si el clic ocurrió en el overlay (fondo oscuro),
+ * y no dentro del contenido del modal. Permite cerrar haciendo clic fuera.
  *
- * @param {Event}  event - Evento de clique
- * @param {string} id    - ID do overlay
+ * @param {Event}  event - Evento de clic
+ * @param {string} id    - ID del overlay
  */
 function closeModalOut(event, id) {
-  // Só fecha se o alvo do clique for o próprio overlay (não um filho dele)
+  // Solo cierra si el objetivo del clic es el propio overlay (no un hijo suyo)
   if (event.target === document.getElementById(id)) closeModal(id);
 }
 
-// Listener global: fecha qualquer modal aberto ao pressionar a tecla ESC
+// Listener global: cierra cualquier modal abierto al presionar la tecla ESC
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.querySelectorAll('.modal-overlay.open').forEach(m => {
