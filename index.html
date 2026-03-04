@@ -9,6 +9,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Modelo de manutenção K&Delta;TS</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
   <!--
     FONTES GOOGLE (3 famílias):
@@ -285,9 +286,15 @@
   .param-row label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 15px;
-    color: var(--accent);   /* dorado — cambiar para alterar el color de las etiquetas */
+    color: var(--accent);
     min-width: 36px;
     flex-shrink: 0;
+  }
+  .param-row label sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    vertical-align: sub;
   }
   /* Texto descriptivo del parámetro */
   .param-row .desc {
@@ -719,7 +726,7 @@
   /* Descripción textual debajo de la fórmula */
   .formula-card-desc {
     padding: 12px 16px 14px;
-    font-size: 12.5px; color: var(--text-dim);
+    font-size: 12.5px; color: #fff;
     line-height: 1.6;
     border-top: 1px solid var(--border);
   }
@@ -740,6 +747,88 @@
     transition: opacity 0.2s;
   }
   .sidebar-item:hover .hint-dot { opacity: 1; }
+
+  /* ── SENSITIVITY ANALYSIS SECTION ── */
+  .sensitivity-section {
+    margin-top: 24px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .sensitivity-header {
+    background: rgba(240,165,0,0.07);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sensitivity-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 3px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .sensitivity-body { padding: 20px; }
+  .param-selector {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+  }
+  .param-btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 5px 10px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--code-bg);
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 28px;
+  }
+  .param-btn:hover { border-color: var(--accent); background: rgba(240,165,0,0.08); }
+  .param-btn.active {
+    border-color: var(--accent);
+    background: rgba(240,165,0,0.15);
+    color: var(--accent);
+  }
+  .sensitivity-meta {
+    font-size: 14px;
+    color: #fff;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .sensitivity-meta b { color: #fff; font-weight: 700; }
+  .sensitivity-meta .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: #fff;
+  }
+  .chart-container {
+    position: relative;
+    height: 320px;
+  }
+  .sens-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 280px;
+    gap: 10px;
+    color: #fff;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+  }
+  .sens-spinner {
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
 </style>
 
 <script>
@@ -789,7 +878,7 @@
     <!-- Ítem W → abre modal con fórmulas de la mezcla Weibull (f₁, f₂, fx) -->
     <div class="sidebar-item" onclick="openModal('modal-weibull')">
       <div class="sidebar-num">W</div>
-      <div class="sidebar-label">Mezcla Weibull</div>
+      <div class="sidebar-label">Mistura Weibull</div>
       <span class="hint-dot">∑</span>
     </div>
     <!-- Ítem E → abre modal con fórmulas de delay-time y choques (fh, Rh, fz, Rz) -->
@@ -799,12 +888,12 @@
       <span class="hint-dot">∑</span>
     </div>
 
-    <!-- Categoría 2: Parámetros de costo -->
+    <!-- Categoría 2: Parâmetros de custo -->
     <div class="sidebar-section">CUSTOS</div>
     <!-- Ítem C → abre modal con definición de cf, cp, ci, cn, cc -->
     <div class="sidebar-item" onclick="openModal('modal-custos')">
       <div class="sidebar-num">C</div>
-      <div class="sidebar-label">Parámetros de costo</div>
+      <div class="sidebar-label">Parâmetros de custo</div>
       <span class="hint-dot">∑</span>
     </div>
 
@@ -822,7 +911,7 @@
     <!-- Ítem R → abre modal con la fórmula completa de la tasa de costo -->
     <div class="sidebar-item" onclick="openModal('modal-taxa')">
       <div class="sidebar-num">R</div>
-      <div class="sidebar-label">Tasa de costo</div>
+      <div class="sidebar-label">Taxa de custo</div>
       <span class="hint-dot">∑</span>
     </div>
   </aside>
@@ -841,23 +930,23 @@
         <!-- Título principal del modelo -->
         <div class="ex-title">Com custo de degradação e choques</div>
         <!-- Subtítulo descriptivo en JetBrains Mono -->
-        <div class="ex-subtitle">mezcla Weibull · exponencial · delay-time · 9 escenarios</div>
+        <div class="ex-subtitle">mistura Weibull · exponencial · delay-time · 9 cenários</div>
       </div>
     </div>
 
     <!-- ── DESCRIPCIÓN DEL MODELO ──
          Panel con texto explicativo, la fórmula central c(D,T,K) y chips de concepto -->
     <div class="param-panel" style="line-height:1.7; font-size:14.5px;">
-      Modelo basado en la teoría de delay-time: un defecto surge en el instante <strong style="color:var(--accent)">x</strong> (degradación) o <strong style="color:var(--accent)">z</strong> (choque), pero solo causa falla tras un período de delay-time <strong style="color:var(--accent)">h</strong>. La tasa de costo se calcula como:
+      Modelo baseado na teoria de delay-time: um defeito surge no instante <strong style="color:var(--accent)">x</strong> (degradação) ou <strong style="color:var(--accent)">z</strong> (choque), mas só causa falha após um período de delay-time <strong style="color:var(--accent)">h</strong>. A taxa de custo é calculada como:
       <!-- Recuadro verde con la fórmula central del modelo -->
       <div class="formula-box" style="margin-top:14px;">
         <div class="formula-title">Fórmula central</div>
-        C(K, &Delta;, T) = E[Costo del ciclo] / E[Duración del ciclo] = SC / SV
+        C(K, &Delta;, T) = E[Custo do ciclo] / E[Duração do ciclo] = SC / SV
       </div>
       <!-- Chips de concepto — agregar/quitar <span class="concept-tag"> para más chips -->
       <div class="concepts" style="margin-top:14px;">
-        <span class="concept-tag">9 escenarios</span>
-        <span class="concept-tag">Weibull mezcla</span>
+        <span class="concept-tag">9 cenários</span>
+        <span class="concept-tag">Weibull</span>
         <span class="concept-tag">Exponencial choque</span>
         <span class="concept-tag">Delay-time</span>
         <span class="concept-tag">Integração numérica</span>
@@ -874,13 +963,13 @@
         <div class="group-label">COMPONENTE FRACO</div>
         <div class="param-row">
           <label>n₁</label>
-          <span class="desc">Escala de la Weibull (componente débil)</span>
+          <span class="desc">Escala da Weibull (componente fraco)</span>
           <!-- id="n1" → leído por getParams() → usado como η₁ en f_debil(x) en JS -->
           <input type="number" id="n1" value="0.3" step="0.1" min="0.01">
         </div>
         <div class="param-row">
           <label>b₁</label>
-          <span class="desc">Forma de la Weibull (componente débil)</span>
+          <span class="desc">Forma da Weibull (componente fraco)</span>
           <!-- id="b1" → leído por getParams() → usado como β₁ en f_debil(x) en JS -->
           <input type="number" id="b1" value="3" step="0.5" min="0.1">
         </div>
@@ -890,13 +979,13 @@
         <div class="group-label">COMPONENTE FORTE</div>
         <div class="param-row">
           <label>n₂</label>
-          <span class="desc">Escala de la Weibull (componente fuerte)</span>
+          <span class="desc">Escala da Weibull (componente forte)</span>
           <!-- id="n2" → leído por getParams() → usado como η₂ en f_forte(x) en JS -->
           <input type="number" id="n2" value="3" step="0.1" min="0.01">
         </div>
         <div class="param-row">
           <label>b₂</label>
-          <span class="desc">Forma de la Weibull (componente fuerte)</span>
+          <span class="desc">Forma da Weibull (componente forte)</span>
           <!-- id="b2" → leído por getParams() → usado como β₂ en f_forte(x) en JS -->
           <input type="number" id="b2" value="3" step="0.5" min="0.1">
         </div>
@@ -906,7 +995,7 @@
         <div class="group-label">MISTURA</div>
         <div class="param-row">
           <label>a</label>
-          <span class="desc">Proporción de componentes débiles (0 &lt; a &lt; 1)</span>
+          <span class="desc">Proporção de componentes fracos (0 &lt; a &lt; 1)</span>
           <!-- id="a" → leído por getParams() → peso de la mezcla: fx = a·f_debil + (1-a)·f_forte -->
           <input type="number" id="a" value="0.05" step="0.01" min="0" max="1">
         </div>
@@ -923,7 +1012,7 @@
         <div class="group-label">DELAY-TIME</div>
         <div class="param-row">
           <label>λ</label>
-          <span class="desc">Tasa exponencial del delay-time (inverso de la media)</span>
+          <span class="desc">Taxa exponencial do delay-time (inverso da média)</span>
           <!-- id="l" → leído por getParams() → tasa λ de fh(h) = λ·e^(-λh) y Rh(h) = e^(-λh) -->
           <input type="number" id="l" value="1" step="0.1" min="0.01">
         </div>
@@ -933,7 +1022,7 @@
         <div class="group-label">CHOQUES EXTERNOS</div>
         <div class="param-row">
           <label>μ</label>
-          <span class="desc">Tasa de llegada de los choques externos</span>
+          <span class="desc">Taxa de chegada dos choques externos</span>
           <!-- id="u" → leído por getParams() → tasa μ de fz(z) = μ·e^(-μz) y Rz(z) = e^(-μz) -->
           <input type="number" id="u" value="0.5" step="0.1" min="0.01">
         </div>
@@ -942,37 +1031,37 @@
 
     <!-- ── SECCIÓN: PARÂMETROS DE CUSTO ──
          Los 5 costos del modelo. id="sec-custos" → destino del scroll -->
-    <div class="section-label" id="sec-custos">PARÁMETROS DE COSTO</div>
+    <div class="section-label" id="sec-custos">PARÂMETROS DE CUSTO</div>
     <div class="param-panel">
       <div class="param-group" style="margin-bottom:0">
         <div class="group-label">CUSTOS DE SUBSTITUIÇÃO E INSPEÇÃO</div>
         <div class="param-row">
-          <label>cᶠ</label>
-          <span class="desc">Costo de sustitución correctiva (falla)</span>
+          <label>C<sub>F</sub></label>
+          <span class="desc">Custo de substituição corretiva (falha)</span>
           <!-- id="cf" → costo cuando el componente falla (escenarios 1, 3, 5, 7) -->
           <input type="number" id="cf" value="5" step="0.5" min="0">
         </div>
         <div class="param-row">
-          <label>cₚ</label>
-          <span class="desc">Costo de sustitución preventiva</span>
+          <label>C<sub>P</sub></label>
+          <span class="desc">Custo de substituição preventiva</span>
           <!-- id="cp" → costo cuando el defecto es detectado (escenarios 2, 4, 6, 8, 9) -->
           <input type="number" id="cp" value="1" step="0.1" min="0">
         </div>
         <div class="param-row">
-          <label>cᵢ</label>
-          <span class="desc">Costo por inspección realizada</span>
+          <label>C<sub>I</sub></label>
+          <span class="desc">Custo por inspeção realizada</span>
           <!-- id="ci" → multiplicado por el número de inspecciones realizadas -->
           <input type="number" id="ci" value="0.1" step="0.05" min="0">
         </div>
         <div class="param-row">
-          <label>cₙ</label>
-          <span class="desc">Costo unitario de degradación natural</span>
+          <label>C<sub>N</sub></label>
+          <span class="desc">Custo unitário de degradação natural</span>
           <!-- id="cn" → penalización por tiempo en estado defectuoso (degradación natural) -->
           <input type="number" id="cn" value="0.04" step="0.01" min="0">
         </div>
         <div class="param-row">
-          <label>cᶜ</label>
-          <span class="desc">Costo unitario de choque externo</span>
+          <label>C<sub>C</sub></label>
+          <span class="desc">Custo unitário de choque externo</span>
           <!-- id="cc" → penalización por tiempo en estado defectuoso (choque externo) -->
           <input type="number" id="cc" value="0.04" step="0.01" min="0">
         </div>
@@ -988,21 +1077,21 @@
         <div class="group-label">VARIÁVEIS DE DECISÃO</div>
         <div class="param-row">
           <label>D</label>
-          <span class="desc">Intervalo entre inspecciones periódicas</span>
+          <span class="desc">Intervalo entre inspeções periódicas</span>
           <!-- id="D" → intervalo entre inspecciones. Define los subintervalos [(i-1)D, iD) -->
-          <input type="number" id="D" value="0.9092" step="0.01" min="0.01">
+          <input type="number" id="D" value="0.36889" step="0.01" min="0.01">
         </div>
         <div class="param-row">
           <label>T</label>
-          <span class="desc">Edad de sustitución preventiva</span>
+          <span class="desc">Idade de substituição preventiva</span>
           <!-- id="T" → edad de sustitución preventiva por tiempo. Define el fin del ciclo -->
-          <input type="number" id="T" value="8" step="0.5" min="0.1">
+          <input type="number" id="T" value="3.25" step="0.5" min="0.1">
         </div>
         <div class="param-row">
           <label>K</label>
-          <span class="desc">Número de inspecciones en el ciclo</span>
+          <span class="desc">Número de inspeções no ciclo</span>
           <!-- id="K" → número de inspecciones. Debe cumplir K·D ≤ T (validado en runModel()) -->
-          <input type="number" id="K" value="5" step="1" min="0" style="width:86px;">
+          <input type="number" id="K" value="8" step="1" min="0" style="width:86px;">
         </div>
         <!-- Recordatorio visual de la restricción estructural del modelo -->
         <div style="margin-top:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:#fff; padding: 6px 0;">
@@ -1031,7 +1120,7 @@
            · .progress-wrap (barra de progreso durante el cálculo)
            · .results-wrap (cards + tabla + formula-box al terminar)
            · .error-box (si hay error de validación o cálculo) -->
-    <div class="section-label" id="sec-resultado">RESULTADO — TASA DE COSTO C(K, &Delta;, T)</div>
+    <div class="section-label" id="sec-resultado">RESULTADO — TAXA DE CUSTO C(K, &Delta;, T)</div>
     <div id="outputArea">
       <!-- Estado inicial: ícono decorativo SVG de documento + mensaje instructivo.
            Este contenido es reemplazado por JS en showOutput() al calcular o resetear. -->
@@ -1042,7 +1131,7 @@
           <line x1="16" y1="26" x2="28" y2="26" stroke="#5a6070" stroke-width="1.5"/>
           <line x1="16" y1="32" x2="24" y2="32" stroke="#5a6070" stroke-width="1.5"/>
         </svg>
-        <p>Configure los parámetros arriba<br>y haga clic en CALCULAR</p>
+        <p>Configure os parâmetros acima<br>e clique em CALCULAR</p>
       </div>
     </div>
 
@@ -1203,7 +1292,7 @@
           $$C_2(x) = C_P + C_I \cdot i + C_N(i\Delta - x) \qquad C_6(z) = C_P + C_I \cdot i + C_C(i\Delta - z)$$
         </div>
         <div class="formula-card-desc">
-          Custo preventivo + <code>i</code> inspeções + custo proporcional ao tempo de defeito latente <code>(i\Delta - x)</code> ou <code>(i\Delta - z)</code> sem ser detectado.
+          Custo preventivo + <code>i</code> inspeções + custo proporcional ao tempo de defeito latente <code>(i·Δ − x)</code> ou <code>(i·Δ − z)</code> sem ser detectado.
         </div>
       </div>
 
@@ -1462,14 +1551,14 @@ function integrate2(f, ax, bx, upper, nx = 100, nh = 100) {
  *   l            Tasa exponencial del delay-time (λ)
  *   u            Tasa de llegada de choques externos (μ)
  *   ci           Costo por inspección
- *   cp           Costo de sustitución preventiva
- *   cf           Costo de sustitución correctiva (falla)
+ *   cp           Custo de substituição preventiva
+ *   cf           Custo de substituição corretiva (falha)
  *   cn           Costo unitario de penalización por degradación natural
  *   cc           Costo unitario de penalización por choque
  *   D            Intervalo entre inspecciones
- *   T            Edad de sustitución preventiva
- * @param {number} K  - Número de inspecciones en el ciclo
- * @returns {number}    Tasa de costo c(D, T, K); Infinity si EV_total = 0
+ *   T            Idade de substituição preventiva
+ * @param {number} K  - Número de inspeções no ciclo
+ * @returns {number}    Taxa de custo c(D, T, K); Infinity si EV_total = 0
  */
 function computeCost(p, K) {
   const { n1, b1, n2, b2, a, l, u, ci, cp, cf, cn, cc, D, T } = p;
@@ -1709,7 +1798,7 @@ function computeCost(p, K) {
     EV_total += ev9;
   }
 
-  // Tasa de costo final: razón entre costo esperado y vida esperada
+  // Taxa de custo final: razón entre costo esperado y vida esperada
   // Si EV_total = 0 (parametrización inválida), retorna Infinity
   return EV_total > 0 ? EC_total / EV_total : Infinity;
 }
@@ -1741,8 +1830,8 @@ function getParams() {
     cn: +document.getElementById('cn').value,  // Penalización degradación natural
     cc: +document.getElementById('cc').value,  // Penalización choque externo
     D:  +document.getElementById('D').value,   // Intervalo entre inspecciones
-    T:  +document.getElementById('T').value,   // Edad de sustitución preventiva
-    K:  +document.getElementById('K').value,   // Número de inspecciones en el ciclo
+    T:  +document.getElementById('T').value,   // Idade de substituição preventiva
+    K:  +document.getElementById('K').value,   // Número de inspeções no ciclo
   };
 }
 
@@ -1777,7 +1866,7 @@ function runModel() {
   setRunning(true);   // Desactiva el botón y muestra spinner
 
   // Muestra la barra de progreso inicial
-  showOutput(`<div class="progress-wrap"><div class="progress-top"><span>Calculando c(D=${D}, T=${T}, K=${K})...</span><span id="progPct">—</span></div><div class="progress-track"><div class="progress-fill" id="progFill" style="width:0%;"></div></div></div>`);
+  showOutput(`<div class="progress-wrap"><div class="progress-top"><span>Calculando c(K=${K}, Δ=${D}, T=${T})...</span><span id="progPct">—</span></div><div class="progress-track"><div class="progress-fill" id="progFill" style="width:0%;"></div></div></div>`);
 
   // Animación de la barra: avanza 2% cada 80ms hasta 90% (el resto completa al terminar)
   let pct = 0;
@@ -1827,7 +1916,7 @@ function runModel() {
           <div class="summary-cards">
             <div class="card">
               <div class="card-label">Variáveis de decisão</div>
-              <div class="card-value" style="font-size:16px; letter-spacing:1px;">K=${K} · D=${D} · T=${T}</div>
+              <div class="card-value" style="font-size:16px; letter-spacing:1px;">K=${K} · Δ=${D} · T=${T}</div>
               <div class="card-sub">${K} inspeção(ões) · intervalo ${D} · idade ${T}</div>
             </div>
             <div class="card">
@@ -1837,7 +1926,7 @@ function runModel() {
             </div>
           </div>
           <table class="results-table">
-            <thead><tr><th>K</th><th>D</th><th>T</th><th>Taxa de custo &nbsp; c(D, T, K)</th></tr></thead>
+            <thead><tr><th>K</th><th>Δ</th><th>T</th><th>Taxa de custo &nbsp; c(K, Δ, T)</th></tr></thead>
             <tbody><tr class="best">
               <td class="k-col">${K}</td>
               <td class="k-col">${D}</td>
@@ -1847,12 +1936,40 @@ function runModel() {
           </table>
           <div class="formula-box">
             <div class="formula-title">Parâmetros utilizados</div>
-            K = ${K} &nbsp;·&nbsp; D = ${D} &nbsp;·&nbsp; T = ${T}<br>
-            cᶠ = ${p.cf} &nbsp;·&nbsp; cₚ = ${p.cp} &nbsp;·&nbsp; cᵢ = ${p.ci} &nbsp;·&nbsp; cₙ = ${p.cn} &nbsp;·&nbsp; cᶜ = ${p.cc}
+            K = ${K} &nbsp;·&nbsp; Δ = ${D} &nbsp;·&nbsp; T = ${T}<br>
+            C<sub>F</sub> = ${p.cf} &nbsp;·&nbsp; C<sub>P</sub> = ${p.cp} &nbsp;·&nbsp; C<sub>I</sub> = ${p.ci} &nbsp;·&nbsp; C<sub>N</sub> = ${p.cn} &nbsp;·&nbsp; C<sub>C</sub> = ${p.cc}
+          </div>
+
+          <!-- ANÁLISE DE SENSIBILIDADE -->
+          <div class="sensitivity-section">
+            <div class="sensitivity-header">
+              <div class="sensitivity-title">ANÁLISE DE SENSIBILIDADE</div>
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);">variação ±10% em cada parâmetro</span>
+            </div>
+            <div class="sensitivity-body">
+              <div class="sensitivity-meta">Selecione um parâmetro para ver como a <b>taxa de custo C(K, Δ, T)</b> responde a variações de <b>−10% até +10%</b> em torno do valor base:</div>
+              <div style="display:flex;gap:8px;margin:10px 0 4px 0;">
+                <button id="toggleNeg" onclick="toggleSensDir('neg')" style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 14px;border:1px solid #e05260;background:transparent;color:#e05260;border-radius:4px;cursor:pointer;" title="Mostrar variação −10%">−10%</button>
+                <button id="togglePos" onclick="toggleSensDir('pos')" style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:4px 14px;border:1px solid #00d4aa;background:transparent;color:#00d4aa;border-radius:4px;cursor:pointer;" title="Mostrar variação +10%">+10%</button>
+              </div>
+              <div class="param-selector" id="paramSelector">
+                ${buildParamButtons()}
+              </div>
+              <div id="sensitivityChart">
+                <div class="sens-loading" style="height:80px;">
+                  ← Selecione um parâmetro acima
+                </div>
+              </div>
+            </div>
           </div>
         </div>`);
 
-      showToast(`✓ c(${K}, ${D}, ${T}) = ${c.toFixed(6)}`);
+      // Armazena parâmetros atuais para a análise de sensibilidade
+      window._sensitivityBase = { p: Object.assign({}, p), K, c };
+      // Reseta histórico de curvas ao recalcular
+      _sensHistory = [];
+
+      showToast(`✓ c(${K}, Δ=${D}, ${T}) = ${c.toFixed(6)}`);
     }, 200);
   };
 
@@ -1937,7 +2054,7 @@ function resetForm() {
       <line x1="16" y1="26" x2="28" y2="26" stroke="#5a6070" stroke-width="1.5"/>
       <line x1="16" y1="32" x2="24" y2="32" stroke="#5a6070" stroke-width="1.5"/>
     </svg>
-    <p>Configure los parámetros arriba<br>y haga clic en CALCULAR</p>
+    <p>Configure os parâmetros acima<br>e clique em CALCULAR</p>
   </div>`);
 }
 
@@ -2018,7 +2135,365 @@ function closeModalOut(event, id) {
   if (event.target === document.getElementById(id)) closeModal(id);
 }
 
-// Listener global: cierra cualquier modal abierto al presionar la tecla ESC
+// ─── 5. ANÁLISE DE SENSIBILIDADE ─────────────────────────────────────────────
+
+// Definição dos parâmetros disponíveis para análise
+const SENS_PARAMS = [
+  { key: 'n1',  label: 'η₁', desc: 'Escala Weibull fraco' },
+  { key: 'b1',  label: 'β₁', desc: 'Forma Weibull fraco' },
+  { key: 'n2',  label: 'η₂', desc: 'Escala Weibull forte' },
+  { key: 'b2',  label: 'β₂', desc: 'Forma Weibull forte' },
+  { key: 'a',   label: 'a',  desc: 'Mistura' },
+  { key: 'l',   label: 'λ',  desc: 'Delay-time' },
+  { key: 'u',   label: 'μ',  desc: 'Choques' },
+  { key: 'ci',  label: 'C<sub>I</sub>', desc: 'Custo inspeção' },
+  { key: 'cp',  label: 'C<sub>P</sub>', desc: 'Custo preventivo' },
+  { key: 'cf',  label: 'C<sub>F</sub>', desc: 'Custo corretivo' },
+  { key: 'cn',  label: 'C<sub>N</sub>', desc: 'Custo degradação' },
+  { key: 'cc',  label: 'C<sub>C</sub>', desc: 'Custo choque' },
+  { key: 'K',   label: 'K',  desc: 'Nº de inspeções' },
+  { key: 'D',   label: 'Δ',  desc: 'Intervalo inspeção' },
+  { key: 'T',   label: 'T',  desc: 'Idade preventiva' },
+];
+
+/**
+ * buildParamButtons()
+ * Gera o HTML dos botões de seleção de parâmetro para análise de sensibilidade.
+ */
+function buildParamButtons() {
+  return SENS_PARAMS.map(pm =>
+    `<button class="param-btn" onclick="runSensitivity('${pm.key}')" id="sbtn_${pm.key}" title="${pm.desc}">${pm.label}</button>`
+  ).join('');
+}
+
+// Referência ao chart atual (para destruir antes de criar novo)
+let _sensChart = null;
+// Histórico de curvas anteriores para overlay em cinza
+let _sensHistory = [];
+
+// Direções ativas: 'neg' = −10%, 'pos' = +10%  (ambas ativas por padrão = null)
+let _sensActiveDir = null;
+
+/**
+ * toggleSensDir(dir)
+ * Ativa/desativa a visualização de −10% ou +10%.
+ * O resultado fica salvo no gráfico (histórico) ao trocar.
+ */
+function toggleSensDir(dir) {
+  _sensActiveDir = (_sensActiveDir === dir) ? null : dir;
+
+  // Atualiza visual dos botões
+  const neg = document.getElementById('toggleNeg');
+  const pos = document.getElementById('togglePos');
+  if (neg) {
+    neg.style.background = (_sensActiveDir === 'neg') ? '#e05260' : 'transparent';
+    neg.style.color      = (_sensActiveDir === 'neg') ? '#111318' : '#e05260';
+  }
+  if (pos) {
+    pos.style.background = (_sensActiveDir === 'pos') ? '#00d4aa' : 'transparent';
+    pos.style.color      = (_sensActiveDir === 'pos') ? '#111318' : '#00d4aa';
+  }
+
+  // Re-executa o gráfico atual se já houver um parâmetro selecionado
+  const activeBtn = document.querySelector('.param-btn.active');
+  if (activeBtn) {
+    const key = activeBtn.id.replace('sbtn_', '');
+    runSensitivity(key);
+  }
+}
+
+/**
+ * runSensitivity(paramKey)
+ * Calcula a taxa de custo para 21 variações do parâmetro escolhido.
+ * Ao clicar num ponto do gráfico, esse ponto vira a nova base.
+ * Curvas anteriores ficam sobrepostas em cinza.
+ */
+function runSensitivity(paramKey) {
+  const base = window._sensitivityBase;
+  if (!base) return;
+
+  // Marca botão ativo
+  document.querySelectorAll('.param-btn').forEach(b => b.classList.remove('active'));
+  const activeBtn = document.getElementById('sbtn_' + paramKey);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  const { p, K, c: cBase } = base;
+  const pm = SENS_PARAMS.find(x => x.key === paramKey);
+  const baseVal = paramKey === 'K' ? K : p[paramKey];
+  const isKParam = paramKey === 'K';
+
+  // Mostra loading
+  const chartDiv = document.getElementById('sensitivityChart');
+  chartDiv.innerHTML = `<div class="sens-loading"><div class="sens-spinner"></div>Calculando variação de ${pm.label}...</div>`;
+
+  setTimeout(() => {
+    const steps = 21;
+    const labelsAll = [];
+    const costsAll = [];
+    let baseIdx = 10;
+
+    for (let i = 0; i < steps; i++) {
+      const pv = Object.assign({}, p);
+      if (isKParam) {
+        const delta = -10 + i;
+        const newK = Math.max(0, K + delta);
+        const maxK = Math.floor(pv.T / pv.D);
+        const effK = Math.min(newK, maxK);
+        labelsAll.push(`${effK}${delta === 0 ? ' ★' : ''}`);
+        costsAll.push(computeCost(pv, effK));
+        if (delta === 0) baseIdx = i;
+      } else {
+        const pct = -10 + i;
+        labelsAll.push((pct >= 0 ? '+' : '') + pct + '%');
+        pv[paramKey] = baseVal * (1 + pct / 100);
+        if (paramKey === 'D') {
+          const maxK = Math.floor(pv.T / pv[paramKey]);
+          costsAll.push(computeCost(pv, Math.min(K, maxK)));
+        } else if (paramKey === 'T') {
+          const maxK = Math.floor(pv[paramKey] / pv.D);
+          costsAll.push(computeCost(pv, Math.min(K, maxK)));
+        } else {
+          costsAll.push(computeCost(pv, K));
+        }
+        if (pct === 0) baseIdx = i;
+      }
+    }
+
+    // Filtra pontos segundo direção ativa (−10% ou +10%)
+    let labels = labelsAll;
+    let costs  = costsAll;
+    if (_sensActiveDir === 'neg') {
+      // Mantém apenas i <= baseIdx  (−10% até 0%)
+      labels = labelsAll.slice(0, baseIdx + 1);
+      costs  = costsAll.slice(0, baseIdx + 1);
+      baseIdx = labels.length - 1;
+    } else if (_sensActiveDir === 'pos') {
+      // Mantém apenas i >= baseIdx  (0% até +10%)
+      const origBase = baseIdx;
+      labels  = labelsAll.slice(origBase);
+      costs   = costsAll.slice(origBase);
+      baseIdx = 0;
+    }
+
+    // Monta info header
+    chartDiv.innerHTML = `
+      <div class="sensitivity-meta" style="margin-bottom:4px;">
+        <b>${pm.label}</b> &nbsp;·&nbsp; base atual: <b>${isKParam ? 'K=' + baseVal : baseVal}</b> &nbsp;·&nbsp; c = <b>${cBase.toFixed(6)}</b>
+        ${isKParam ? '<br><span class="sub" style="color:#fff;">variação: K−10 até K+10 (passos inteiros, respeitando K·D ≤ T)</span>' : ''}
+      </div>
+      ${_sensHistory.length > 0 ? `
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;">
+        ${_sensHistory.map((h,i) => `<span style="color:rgba(90,96,112,0.9);">■</span> base #${i+1}: ${h.paramKey === 'K' ? 'K=' + h.baseVal : h.paramKey + '=' + h.baseVal} &nbsp;c=${h.cBase.toFixed(6)}`).join(' &nbsp;·&nbsp; ')}
+        &nbsp;·&nbsp; <a href="#" onclick="clearSensHistory();return false;" style="color:var(--accent);text-decoration:none;">limpar</a>
+      </div>` : '<div style="margin-bottom:8px;"></div>'}
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;">
+        Clique num ponto para usar como nova base
+      </div>
+      <div class="chart-container"><canvas id="sensCanvas"></canvas></div>`;
+
+    if (_sensChart) { _sensChart.destroy(); _sensChart = null; }
+
+    const ctx = document.getElementById('sensCanvas').getContext('2d');
+
+    // Cores da curva atual
+    const pointColors = costs.map((v, i) => {
+      if (i === baseIdx) return '#f0a500';
+      return v > cBase ? '#e05260' : '#00d4aa';
+    });
+
+    // Datasets: histórico em cinza + curva atual em dourado
+    const historyDatasets = _sensHistory.map((h, hi) => ({
+      label: `Base anterior #${hi + 1}`,
+      data: h.costs,
+      borderColor: 'rgba(90,96,112,0.5)',
+      borderWidth: 1.5,
+      borderDash: [3, 3],
+      pointBackgroundColor: 'rgba(90,96,112,0.4)',
+      pointBorderColor: 'rgba(90,96,112,0.4)',
+      pointRadius: 3,
+      pointHoverRadius: 5,
+      tension: 0.3,
+      fill: false,
+      // guarda metadados para tooltip
+      _meta: h,
+    }));
+
+    const currentDataset = {
+      label: `${pm.label} (base atual)`,
+      data: costs,
+      borderColor: '#f0a500',
+      borderWidth: 2,
+      pointBackgroundColor: pointColors,
+      pointBorderColor: pointColors,
+      pointRadius: costs.map((_, i) => i === baseIdx ? 8 : 4),
+      pointHoverRadius: 9,
+      tension: 0.3,
+      fill: false,
+      _isCurrent: true,
+      _labels: labels,
+      _paramKey: paramKey,
+      _baseVal: baseVal,
+      _baseIdx: baseIdx,
+      _costs: costs,
+      _p: Object.assign({}, p),
+      _K: K,
+      _cBase: cBase,
+      _isKParam: isKParam,
+    };
+
+    _sensChart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [...historyDatasets, currentDataset],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        onClick: (evt, elements) => {
+          // Filtra apenas cliques na curva atual (último dataset)
+          const currIdx = _sensChart.data.datasets.length - 1;
+          const hit = elements.find(el => el.datasetIndex === currIdx);
+          if (!hit) return;
+
+          const clickedPointIdx = hit.index;
+          const ds = _sensChart.data.datasets[currIdx];
+
+          // Calcula os novos parâmetros base a partir do ponto clicado
+          const clickedPv = Object.assign({}, ds._p);
+          let newK = ds._K;
+          if (ds._isKParam) {
+            const delta = -10 + clickedPointIdx;
+            newK = Math.max(0, ds._K + delta);
+            const maxK = Math.floor(clickedPv.T / clickedPv.D);
+            newK = Math.min(newK, maxK);
+          } else {
+            const pct = -10 + clickedPointIdx;
+            clickedPv[ds._paramKey] = ds._baseVal * (1 + pct / 100);
+            if (ds._paramKey === 'D') newK = Math.min(ds._K, Math.floor(clickedPv.T / clickedPv.D));
+            if (ds._paramKey === 'T') newK = Math.min(ds._K, Math.floor(clickedPv.T / clickedPv.D));
+          }
+          const newC = ds._costs[clickedPointIdx];
+
+          // Empurra curva atual para o histórico
+          _sensHistory.push({
+            costs: [...ds._costs],
+            labels: [...ds._labels],
+            paramKey: ds._paramKey,
+            baseVal: ds._baseVal,
+            cBase: ds._cBase,
+          });
+
+          // Atualiza base global
+          window._sensitivityBase = { p: clickedPv, K: newK, c: newC };
+
+          // Rebota o gráfico com a nova base
+          runSensitivity(ds._paramKey);
+        },
+        plugins: {
+          legend: {
+            display: _sensHistory.length > 0,
+            labels: {
+              color: '#5a6070',
+              font: { family: "'JetBrains Mono', monospace", size: 10 },
+              boxWidth: 20,
+              filter: (item) => item.text.includes('base atual') || item.text.includes('anterior'),
+            }
+          },
+          tooltip: {
+            backgroundColor: '#111318',
+            borderColor: '#1e2330',
+            borderWidth: 1,
+            titleColor: '#f0a500',
+            bodyColor: '#c8cdd8',
+            callbacks: {
+              title: (items) => {
+                const idx = items[0].dataIndex;
+                const dsIdx = items[0].datasetIndex;
+                const ds = _sensChart.data.datasets[dsIdx];
+                if (ds._isCurrent) {
+                  if (isKParam) return `K = ${Math.max(0, K + (idx - 10))}`;
+                  const pct = -10 + idx;
+                  return `${pm.label} ${(pct >= 0 ? '+' : '') + pct}% → ${(baseVal * (1 + pct / 100)).toFixed(4)}`;
+                }
+                return `Curva anterior — ponto ${idx - 10 >= 0 ? '+' : ''}${idx - 10}`;
+              },
+              label: (item) => {
+                const dsIdx = item.datasetIndex;
+                const ds = _sensChart.data.datasets[dsIdx];
+                const refC = ds._isCurrent ? cBase : (ds._meta ? ds._meta.cBase : cBase);
+                const diff = item.raw - refC;
+                const sign = diff >= 0 ? '+' : '';
+                const suffix = ds._isCurrent ? '  ← clique para usar como base' : '';
+                return `c = ${item.raw.toFixed(6)}  (${sign}${((diff / refC) * 100).toFixed(2)}%)${suffix}`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            grid: { color: '#1e2330' },
+            ticks: { color: '#ffffff', font: { family: "'JetBrains Mono', monospace", size: 10 } },
+            title: {
+              display: true,
+              text: isKParam ? 'Número de inspeções K' : `Variação de ${pm.label} (%)`,
+              color: '#ffffff',
+              font: { family: "'Barlow', sans-serif", size: 12 },
+              padding: { top: 8 }
+            }
+          },
+          y: {
+            grid: { color: '#1e2330' },
+            ticks: { color: '#ffffff', font: { family: "'JetBrains Mono', monospace", size: 10 }, callback: v => v.toFixed(5) },
+            title: {
+              display: true,
+              text: 'Taxa de custo  c(K, Δ, T)',
+              color: '#ffffff',
+              font: { family: "'Barlow', sans-serif", size: 12 },
+              padding: { bottom: 8 }
+            }
+          }
+        }
+      }
+    });
+
+    // Linha de referência horizontal (taxa base)
+    const baseC = cBase;
+    const baseLinePlugin = {
+      id: 'baseLineOverlay',
+      afterDraw(chart) {
+        const { ctx, scales: { y } } = chart;
+        const yPos = y.getPixelForValue(baseC);
+        ctx.save();
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = 'rgba(0,212,170,0.35)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(chart.chartArea.left, yPos);
+        ctx.lineTo(chart.chartArea.right, yPos);
+        ctx.stroke();
+        ctx.restore();
+      }
+    };
+    Chart.register(baseLinePlugin);
+    _sensChart.update();
+
+  }, 20);
+}
+
+/**
+ * clearSensHistory()
+ * Limpa o histórico de curvas anteriores e atualiza o gráfico.
+ */
+function clearSensHistory() {
+  _sensHistory = [];
+  const activeBtn = document.querySelector('.param-btn.active');
+  if (activeBtn) {
+    const key = activeBtn.id.replace('sbtn_', '');
+    runSensitivity(key);
+  }
+}
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') {
     document.querySelectorAll('.modal-overlay.open').forEach(m => {
