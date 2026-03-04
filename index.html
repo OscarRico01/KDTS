@@ -829,7 +829,122 @@
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
   }
-</style>
+
+  /* ── CHATBOT ── */
+  .chatbot-section {
+    margin-top: 24px;
+    border: 1px solid #1e2330;
+    border-radius: 10px;
+    overflow: hidden;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .chatbot-header {
+    background: #12151c;
+    padding: 12px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #1e2330;
+  }
+  .chatbot-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .chatbot-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: cbpulse 2s infinite;
+  }
+  @keyframes cbpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .chatbot-messages {
+    background: #0d0f14;
+    padding: 16px;
+    height: 260px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .chatbot-messages::-webkit-scrollbar { width: 4px; }
+  .chatbot-messages::-webkit-scrollbar-thumb { background: #1e2330; border-radius: 2px; }
+  .chat-msg {
+    max-width: 85%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.6;
+  }
+  .chat-msg.bot {
+    background: #12151c;
+    color: #c8cdd8;
+    border: 1px solid #1e2330;
+    align-self: flex-start;
+    border-bottom-left-radius: 2px;
+  }
+  .chat-msg.bot b { color: var(--accent); }
+  .chat-msg.user {
+    background: #1a2240;
+    color: #ffffff;
+    align-self: flex-end;
+    border-bottom-right-radius: 2px;
+  }
+  .chatbot-suggestions {
+    background: #0d0f14;
+    padding: 0 16px 12px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .chat-suggestion {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border: 1px solid #1e2330;
+    border-radius: 20px;
+    background: transparent;
+    color: #5a6070;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+  }
+  .chat-suggestion:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(240,165,0,0.05);
+  }
+  .chatbot-input-row {
+    display: flex;
+    border-top: 1px solid #1e2330;
+    background: #12151c;
+  }
+  .chatbot-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 12px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: #ffffff;
+  }
+  .chatbot-input::placeholder { color: #3a4050; }
+  .chatbot-send {
+    padding: 0 18px;
+    background: transparent;
+    border: none;
+    border-left: 1px solid #1e2330;
+    color: var(--accent);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .chatbot-send:hover { background: rgba(240,165,0,0.08); }
+
+  </style>
 
 <script>
   /*
@@ -1962,6 +2077,22 @@ function runModel() {
               </div>
             </div>
           </div>
+
+          <!-- ── CHATBOT ── -->
+          <div class="chatbot-section" id="chatbotSection">
+            <div class="chatbot-header">
+              <div class="chatbot-dot"></div>
+              <div class="chatbot-title">ASSISTENTE DO MODELO — KDTS</div>
+            </div>
+            <div class="chatbot-messages" id="chatMessages">
+              <div class="chat-msg bot">Olá! Sou o assistente deste modelo de manutenção para motobombas. Selecione uma pergunta ou escreva a sua dúvida.</div>
+            </div>
+            <div class="chatbot-suggestions" id="chatSuggestions"></div>
+            <div class="chatbot-input-row">
+              <input class="chatbot-input" id="chatInput" type="text" placeholder="Escreva sua pergunta..." onkeydown="if(event.key==='Enter')sendChat()">
+              <button class="chatbot-send" onclick="sendChat()" title="Enviar">&#9658;</button>
+            </div>
+          </div>
         </div>`);
 
       // Armazena parâmetros atuais para a análise de sensibilidade
@@ -2082,6 +2213,153 @@ function scrollTo(id) {
  *
  * @param {string} msg - Texto a mostrar en la notificación
  */
+
+// ── CHATBOT KDTS ─────────────────────────────────────────────────────────────
+const CHAT_KB = [
+  // ── CONCEITOS FUNDAMENTAIS ───────────────────────────────────────────────
+  {
+    keywords: ['delay-time','delay time','defeito','detecção','estado defeituoso','h'],
+    q: 'O que é o Delay-Time?',
+    a: 'O <b>Delay-Time (h)</b> é o período entre o surgimento de um defeito observável e a falha efetiva do componente. No modelo, h segue uma distribuição exponencial. Quanto maior o delay-time médio, mais tempo o sistema permanece defeituoso antes de falhar — e maiores os custos <b>C<sub>N</sub></b> e <b>C<sub>C</sub></b> acumulados (Rico & Cavalcante, 2025, p. 20).'
+  },
+  {
+    keywords: ['taxa de custo','c(k','custo por unidade','minimizar','função objetivo','c infinito'],
+    q: 'O que é a taxa de custo C(K, Δ, T)?',
+    a: 'É a razão entre o <b>custo esperado total do ciclo</b> e a <b>vida esperada do ciclo</b>, calculada pelo teorema de renovação-recompensa. O modelo otimiza os três parâmetros de decisão (K, Δ, T) para minimizá-la. No caso base da dissertação, o ótimo obtido foi <b>C∞ = 1,36</b> com K=8, Δ=0,37 e T=3,25 (p. 44).'
+  },
+  {
+    keywords: ['weibull','mistura weibull','bimodal','componente fraco','componente forte','subpopulação','alpha','α'],
+    q: 'Por que usar mistura Weibull?',
+    a: 'A <b>mistura Weibull</b> captura populações heterogêneas: componentes <b>fracos</b> (má instalação, defeitos de fabricação) com parâmetros η₁, β₁ e componentes <b>fortes</b> com η₂, β₂. O parâmetro α representa a proporção da subpopulação fraca. No caso base α=0,05 (5% fracos). Quanto maior α, maior a taxa de custo (p. 33, 51).'
+  },
+  {
+    keywords: ['choque','choques','externo','mu','μ','cavitação','obstrução','tensão','elétrico'],
+    q: 'Quais choques afetam a motobomba?',
+    a: 'O modelo considera <b>choques mistos</b>: cavitação (μ=0,2), obstrução por partículas sólidas (μ=0,2) e variações de tensão elétrica (μ=0,1). A taxa total μ=0,5. Choques elétricos têm menor taxa pois podem ser controlados com reguladores de tensão. Todos são modelados por Processo de Poisson Homogêneo (p. 29-30).'
+  },
+  {
+    keywords: ['preventiva','corretiva','substituição','política','cf','cp','cf > cp'],
+    q: 'Qual a diferença entre manutenção preventiva e corretiva?',
+    a: '<b>Preventiva:</b> realizada quando um defeito é detectado em inspeção ou ao atingir a idade T. Custo C<sub>P</sub>=1,0.<br><b>Corretiva:</b> realizada após a falha. Custo C<sub>F</sub>=5,0.<br>A relação C<sub>F</sub> > C<sub>P</sub> > C<sub>I</sub> incentiva a detecção precoce. Ambas renovam o sistema por completo (p. 32).'
+  },
+  {
+    keywords: ['inspeção','inspecao','intervalo','delta','Δ','k','número de inspeções'],
+    q: 'Como funciona a política de inspeções K e Δ?',
+    a: 'A política tem <b>duas fases</b>: na 1ª fase são realizadas <b>K inspeções</b> com intervalo Δ entre elas (monitorando componentes fracos). Na 2ª fase, de KΔ até T, não há inspeções — apenas a substituição preventiva planejada em T. No caso base: K=8, Δ=0,37 (≈ 4,4 meses), T=3,25 anos (p. 33-34).'
+  },
+  {
+    keywords: ['cn','c_n','cdn','custo natural','degradação natural','permanência'],
+    q: 'O que é o custo C_N (degradação natural)?',
+    a: '<b>C<sub>N</sub></b> (c<sub>DN</sub>) é o custo por unidade de tempo em que o sistema permanece em estado defeituoso <i>por degradação natural</i>. Representa aumento de consumo energético, redução de eficiência e perda de produtividade. No caso base c<sub>DN</sub>=0,04 u.m./u.t. Aumentar este custo eleva K e reduz Δ e T (p. 32, 47).'
+  },
+  {
+    keywords: ['cc','c_c','cdc','custo choque','choque externo','permanência choque'],
+    q: 'O que é o custo C_C (choque externo)?',
+    a: '<b>C<sub>C</sub></b> (c<sub>DC</sub>) é o custo por unidade de tempo em que o sistema permanece defeituoso <i>devido a um choque externo</i>. Diferencia-se de C<sub>N</sub> pois a origem do defeito é um evento externo (cavitação, obstrução, tensão). No caso base c<sub>DC</sub>=0,04. Ambos os custos crescem juntos e afetam os mesmos parâmetros de decisão (p. 32, 45).'
+  },
+  {
+    keywords: ['sensibilidade','análise de sensibilidade','variação','robusto','±10%','parâmetro'],
+    q: 'Para que serve a análise de sensibilidade?',
+    a: 'A análise varia cada parâmetro (η₁, η₂, β₁, β₂, α, λ, μ, C<sub>F</sub>, C<sub>I</sub>) para observar o impacto na taxa de custo e nas variáveis de decisão. Os parâmetros mais sensíveis foram: <b>μ</b> (+39,2% com μ=1), <b>λ</b> (+37,4% com λ=3) e <b>C<sub>F</sub></b> (+50,9% com C<sub>F</sub>=15). Os Weibull (η₁, β₁) mostraram impacto mínimo (p. 48-54).'
+  },
+  {
+    keywords: ['eta1','η1','escala fraco','subpopulação fraca','η₁'],
+    q: 'Como η₁ afeta o modelo?',
+    a: '<b>η₁</b> é o parâmetro de escala Weibull da subpopulação <i>fraca</i>. Variando de 0,1 a 0,6, o impacto é pequeno: K passa de 9 para 8 e a taxa de custo varia apenas −0,45%. Isso indica que, com apenas 5% de componentes fracos (α=0,05), esse parâmetro tem influência limitada no custo total (Tabela 3, p. 49).'
+  },
+  {
+    keywords: ['eta2','η2','escala forte','subpopulação forte','η₂','vida útil'],
+    q: 'Como η₂ afeta o modelo?',
+    a: '<b>η₂</b> é o parâmetro de escala Weibull da subpopulação <i>forte</i> (95% dos componentes). É o parâmetro mais influente na vida útil: com η₂=1,5 a taxa sobe +31,1% (componentes falham cedo); com η₂=6 cai −14,9% (vida longa). Componentes mais duráveis permitem T maior e reduzem o custo (Tabela 4, p. 49).'
+  },
+  {
+    keywords: ['lambda','λ','delay time','inverso','média delay'],
+    q: 'Como λ (delay-time) afeta o modelo?',
+    a: '<b>λ</b> é o inverso do tempo médio no estado defeituoso. Quanto maior λ, mais curto o delay-time — o sistema falha rapidamente após o defeito. Com λ=3, a taxa de custo sobe +37,4% e K aumenta para 12 inspeções. Com λ=0,5, cai −17,4%. É um dos parâmetros mais sensíveis do modelo (Tabela 8, p. 52).'
+  },
+  {
+    keywords: ['mu','μ','taxa choque','frequência choque','poisson'],
+    q: 'Como μ (taxa de choque) afeta o modelo?',
+    a: '<b>μ</b> é a taxa de chegada de choques (Processo de Poisson). Com μ=0,1 (poucos choques), a taxa de custo cai −33,2%; com μ=1,0 sobe +39,2% e K=12. Alta frequência de choques exige mais inspeções em intervalos menores. É o parâmetro mais sensível dos relacionados a choques (Tabela 9, p. 53).'
+  },
+  {
+    keywords: ['cf','custo corretivo','custo falha','c_f','renovação corretiva'],
+    q: 'Como C_F afeta o modelo?',
+    a: '<b>C<sub>F</sub></b> é o custo de substituição corretiva. Com C<sub>F</sub>=1,5 (baixo), o modelo elimina inspeções (K=0) e T=13,79 — é mais barato aguardar a falha. Com C<sub>F</sub>=15, K=16 e a taxa sobe +50,9%. Quanto mais caro corrigir, mais importante inspecionar preventivamente (Tabela 10, p. 53).'
+  },
+  {
+    keywords: ['ci','custo inspeção','c_i','inspeção cara'],
+    q: 'Como C_I afeta o modelo?',
+    a: '<b>C<sub>I</sub></b> é o custo por inspeção. Com C<sub>I</sub>=0,01 (barato), K=50 inspeções e a taxa cai −30%. Com C<sub>I</sub>=0,50, K=0 (sem inspeções) e a taxa sobe +28,2%. Inspeções baratas justificam alta frequência; inspeções caras levam à política puramente corretiva (Tabela 11, p. 54).'
+  },
+  {
+    keywords: ['comparação','política corretiva','política inspeção','substituição por idade','outras políticas'],
+    q: 'Como a política proposta se compara com outras?',
+    a: 'A dissertação compara 4 políticas (Fig. 8, p. 56):<br>1. <b>Proposta</b>: menor taxa de custo para alto c<sub>DN</sub>/c<sub>DC</sub><br>2. <b>Apenas inspeções</b> (K=T=∞): próxima da proposta com custos baixos<br>3. <b>Substituição por idade</b> (K=0): custo intermediário<br>4. <b>Puramente corretiva</b> (K=0, T=∞): maior custo de todas<br>A proposta é superior quando os custos de permanência no estado defeituoso são relevantes.'
+  },
+  {
+    keywords: ['motobomba','bomba','sistema distribuição','água','componente crítico'],
+    q: 'Por que focar na motobomba?',
+    a: 'A <b>motobomba</b> é o componente crítico de sistemas de distribuição de água. Sua falha interrompe o abastecimento, causa problemas de saúde pública e aumenta custos operacionais. Opera continuamente e está sujeita a degradação natural e choques externos (cavitação, obstrução, variações de tensão). A manutenção proativa é essencial para garantir disponibilidade contínua de água (p. 12, 25).'
+  },
+  {
+    keywords: ['cenário','cenários','9 cenários','renovação','ciclo','probabilidade'],
+    q: 'Quais são os 9 cenários do modelo?',
+    a: 'Os cenários capturam todas as possibilidades de renovação:<br><b>Cenários 1-4</b>: degradação natural (defeito antes da inspeção→corretiva; defeito detectado→preventiva; defeito após KΔ→corretiva; defeito após KΔ→preventiva em T)<br><b>Cenários 5-8</b>: idem para choque externo<br><b>Cenário 9</b>: sistema chega perfeito até T→substituição preventiva<br>A taxa de custo C∞ é a soma ponderada de custo/vida de todos os cenários (p. 35-40).'
+  },
+];
+
+function buildChatSuggestions() {
+  const el = document.getElementById('chatSuggestions');
+  if (!el) return;
+  el.innerHTML = CHAT_KB.map((item, i) =>
+    `<button class="chat-suggestion" onclick="answerChat(${i})">${item.q}</button>`
+  ).join('');
+}
+
+function appendMsg(text, who) {
+  const box = document.getElementById('chatMessages');
+  if (!box) return;
+  const div = document.createElement('div');
+  div.className = 'chat-msg ' + who;
+  div.innerHTML = text;
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function answerChat(idx) {
+  const item = CHAT_KB[idx];
+  appendMsg(item.q, 'user');
+  setTimeout(() => appendMsg(item.a, 'bot'), 300);
+}
+
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  appendMsg(text, 'user');
+  input.value = '';
+  const lower = text.toLowerCase();
+  const match = CHAT_KB.find(item => item.keywords.some(kw => lower.includes(kw)));
+  setTimeout(() => {
+    if (match) {
+      appendMsg(match.a, 'bot');
+    } else {
+      appendMsg('Não encontrei resposta para essa pergunta na base atual. Tente selecionar uma das sugestões abaixo ou reformule com palavras-chave do modelo (ex: delay-time, choque, weibull, C<sub>F</sub>, sensibilidade...)', 'bot');
+    }
+  }, 300);
+}
+
+if (!window._chatObserverDone) {
+  window._chatObserverDone = true;
+  new MutationObserver(() => {
+    const el = document.getElementById('chatSuggestions');
+    if (el && el.innerHTML === '') buildChatSuggestions();
+  }).observe(document.body, { childList: true, subtree: true });
+}
+// ── FIM CHATBOT ───────────────────────────────────────────────────────────────
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
