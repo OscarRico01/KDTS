@@ -1169,13 +1169,13 @@
           <input type="number" id="ci" value="0.1" step="0.05" min="0">
         </div>
         <div class="param-row">
-          <label>C<sub>N</sub></label>
+          <label>C<sub>DN</sub></label>
           <span class="desc">Custo unitário de degradação natural</span>
           <!-- id="cn" → penalización por tiempo en estado defectuoso (degradación natural) -->
           <input type="number" id="cn" value="0.04" step="0.01" min="0">
         </div>
         <div class="param-row">
-          <label>C<sub>C</sub></label>
+          <label>C<sub>DC</sub></label>
           <span class="desc">Custo unitário de choque externo</span>
           <!-- id="cc" → penalización por tiempo en estado defectuoso (choque externo) -->
           <input type="number" id="cc" value="0.04" step="0.01" min="0">
@@ -1394,17 +1394,17 @@
       <div class="formula-card">
         <div class="formula-card-header">Cenários 1 e 5 — Falha antes da inspeção i (corretiva)</div>
         <div class="formula-card-body">
-          $$C_1(h) = C_F + C_I(i-1) + C_N \cdot h \qquad C_5(h) = C_F + C_I(i-1) + C_C \cdot h$$
+          $$C_1(h) = C_F + C_I(i-1) + C_{DN} \cdot h \qquad C_5(h) = C_F + C_I(i-1) + C_{DC} \cdot h$$
         </div>
         <div class="formula-card-desc">
-          Custo corretivo + <code>(i-1)</code> inspeções já realizadas + custo proporcional ao delay-time <code>h</code>. Diferença: <code>C_N</code> para degradação, <code>C_C</code> para choque.
+          Custo corretivo + <code>(i-1)</code> inspeções já realizadas + custo proporcional ao delay-time <code>h</code>. Diferença: <code>C_{DN}</code> para degradação, <code>C_{DC}</code> para choque.
         </div>
       </div>
 
       <div class="formula-card">
         <div class="formula-card-header">Cenários 2 e 6 — Detectado na inspeção i (preventiva)</div>
         <div class="formula-card-body">
-          $$C_2(x) = C_P + C_I \cdot i + C_N(i\Delta - x) \qquad C_6(z) = C_P + C_I \cdot i + C_C(i\Delta - z)$$
+          $$C_2(x) = C_P + C_I \cdot i + C_{DN}(i\Delta - x) \qquad C_6(z) = C_P + C_I \cdot i + C_{DC}(i\Delta - z)$$
         </div>
         <div class="formula-card-desc">
           Custo preventivo + <code>i</code> inspeções + custo proporcional ao tempo de defeito latente <code>(i·Δ − x)</code> ou <code>(i·Δ − z)</code> sem ser detectado.
@@ -1414,7 +1414,7 @@
       <div class="formula-card">
         <div class="formula-card-header">Cenários 3 e 7 — Falha entre K·D e T (corretiva)</div>
         <div class="formula-card-body">
-          $$C_3(h) = C_F + C_I \cdot K + C_N \cdot h \qquad C_7(h) = C_F + C_I \cdot K + C_C \cdot h$$
+          $$C_3(h) = C_F + C_I \cdot K + C_{DN} \cdot h \qquad C_7(h) = C_F + C_I \cdot K + C_{DC} \cdot h$$
         </div>
         <div class="formula-card-desc">
           Falha ocorre no período final após as <code>K</code> inspeções, antes de atingir a idade <code>T</code>.
@@ -1424,7 +1424,7 @@
       <div class="formula-card">
         <div class="formula-card-header">Cenários 4 e 8 — Sobrevive até T (preventiva por idade)</div>
         <div class="formula-card-body">
-          $$C_4(x) = C_P + C_I \cdot K + C_N(T - x) \qquad C_8(z) = C_P + C_I \cdot K + C_C(T - z)$$
+          $$C_4(x) = C_P + C_I \cdot K + C_{DN}(T - x) \qquad C_8(z) = C_P + C_I \cdot K + C_{DC}(T - z)$$
         </div>
         <div class="formula-card-desc">
           Defeito presente mas o componente é substituído ao atingir a idade <code>T</code>. Custo proporcional ao tempo latente <code>(T - x)</code> ou <code>(T - z)</code>.
@@ -1476,7 +1476,7 @@
           $$SC = \sum_{j=1}^{9} E[c_j \cdot \mathbf{1}_{\text{cenário }j}]$$
         </div>
         <div class="formula-card-desc">
-          Soma ponderada dos custos de cada cenário pela sua probabilidade de ocorrência. Inclui custos corretivos <code>C_F</code>, preventivos <code>C_P</code>, inspeções <code>C_I</code> e custos de latência <code>C_N</code>, <code>C_C</code>.
+          Soma ponderada dos custos de cada cenário pela sua probabilidade de ocorrência. Inclui custos corretivos <code>C_F</code>, preventivos <code>C_P</code>, inspeções <code>C_I</code> e custos de latência <code>C_{DN}</code>, <code>C_{DC}</code>.
         </div>
       </div>
 
@@ -2052,7 +2052,7 @@ function runModel() {
           <div class="formula-box">
             <div class="formula-title">Parâmetros utilizados</div>
             K = ${K} &nbsp;·&nbsp; Δ = ${D} &nbsp;·&nbsp; T = ${T}<br>
-            C<sub>F</sub> = ${p.cf} &nbsp;·&nbsp; C<sub>P</sub> = ${p.cp} &nbsp;·&nbsp; C<sub>I</sub> = ${p.ci} &nbsp;·&nbsp; C<sub>N</sub> = ${p.cn} &nbsp;·&nbsp; C<sub>C</sub> = ${p.cc}
+            C<sub>F</sub> = ${p.cf} &nbsp;·&nbsp; C<sub>P</sub> = ${p.cp} &nbsp;·&nbsp; C<sub>I</sub> = ${p.ci} &nbsp;·&nbsp; C<sub>DN</sub> = ${p.cn} &nbsp;·&nbsp; C<sub>DC</sub> = ${p.cc}
           </div>
 
           <!-- ANÁLISE DE SENSIBILIDADE -->
@@ -2220,11 +2220,11 @@ const CHAT_KB = [
   {
     keywords: ['delay-time','delay time','defeito','detecção','estado defeituoso','h'],
     q: 'O que é o Delay-Time?',
-    a: 'O <b>Delay-Time (h)</b> é o período entre o surgimento de um defeito observável e a falha efetiva do componente. No modelo, h segue uma distribuição exponencial. Quanto maior o delay-time médio, mais tempo o sistema permanece defeituoso antes de falhar — e maiores os custos <b>C<sub>N</sub></b> e <b>C<sub>C</sub></b> acumulados (Rico & Cavalcante, 2025, p. 20).'
+    a: 'O <b>Delay-Time (h)</b> é o período entre o surgimento de um defeito observável e a falha efetiva do componente. No modelo, h segue uma distribuição exponencial. Quanto maior o delay-time médio, mais tempo o sistema permanece defeituoso antes de falhar — e maiores os custos <b>C<sub>DN</sub></b> e <b>C<sub>DC</sub></b> acumulados (Rico & Cavalcante, 2025, p. 20).'
   },
   {
     keywords: ['taxa de custo','c(k','custo por unidade','minimizar','função objetivo','c infinito'],
-    q: 'O que é a taxa de custo C(K, Δ, T)?',
+    q: 'O que é a taxa de custo C∞(K, Δ, T)?',
     a: 'É a razão entre o <b>custo esperado total do ciclo</b> e a <b>vida esperada do ciclo</b>, calculada pelo teorema de renovação-recompensa. O modelo otimiza os três parâmetros de decisão (K, Δ, T) para minimizá-la. No caso base da dissertação, o ótimo obtido foi <b>C∞ = 1,36</b> com K=8, Δ=0,37 e T=3,25 (p. 44).'
   },
   {
@@ -2249,13 +2249,13 @@ const CHAT_KB = [
   },
   {
     keywords: ['cn','c_n','cdn','custo natural','degradação natural','permanência'],
-    q: 'O que é o custo C_N (degradação natural)?',
-    a: '<b>C<sub>N</sub></b> (c<sub>DN</sub>) é o custo por unidade de tempo em que o sistema permanece em estado defeituoso <i>por degradação natural</i>. Representa aumento de consumo energético, redução de eficiência e perda de produtividade. No caso base c<sub>DN</sub>=0,04 u.m./u.t. Aumentar este custo eleva K e reduz Δ e T (p. 32, 47).'
+    q: 'O que é o custo C_{DN} (degradação natural)?',
+    a: '<b>C<sub>DN</sub></b> (c<sub>DN</sub>) é o custo por unidade de tempo em que o sistema permanece em estado defeituoso <i>por degradação natural</i>. Representa aumento de consumo energético, redução de eficiência e perda de produtividade. No caso base c<sub>DN</sub>=0,04 u.m./u.t. Aumentar este custo eleva K e reduz Δ e T (p. 32, 47).'
   },
   {
     keywords: ['cc','c_c','cdc','custo choque','choque externo','permanência choque'],
-    q: 'O que é o custo C_C (choque externo)?',
-    a: '<b>C<sub>C</sub></b> (c<sub>DC</sub>) é o custo por unidade de tempo em que o sistema permanece defeituoso <i>devido a um choque externo</i>. Diferencia-se de C<sub>N</sub> pois a origem do defeito é um evento externo (cavitação, obstrução, tensão). No caso base c<sub>DC</sub>=0,04. Ambos os custos crescem juntos e afetam os mesmos parâmetros de decisão (p. 32, 45).'
+    q: 'O que é o custo C_{DC} (choque externo)?',
+    a: '<b>C<sub>DC</sub></b> (c<sub>DC</sub>) é o custo por unidade de tempo em que o sistema permanece defeituoso <i>devido a um choque externo</i>. Diferencia-se de C<sub>DN</sub> pois a origem do defeito é um evento externo (cavitação, obstrução, tensão). No caso base c<sub>DC</sub>=0,04. Ambos os custos crescem juntos e afetam os mesmos parâmetros de decisão (p. 32, 45).'
   },
   {
     keywords: ['sensibilidade','análise de sensibilidade','variação','robusto','±10%','parâmetro'],
@@ -2427,8 +2427,8 @@ const SENS_PARAMS = [
   { key: 'ci',  label: 'C<sub>I</sub>', desc: 'Custo inspeção' },
   { key: 'cp',  label: 'C<sub>P</sub>', desc: 'Custo preventivo' },
   { key: 'cf',  label: 'C<sub>F</sub>', desc: 'Custo corretivo' },
-  { key: 'cn',  label: 'C<sub>N</sub>', desc: 'Custo degradação' },
-  { key: 'cc',  label: 'C<sub>C</sub>', desc: 'Custo choque' },
+  { key: 'cn',  label: 'C<sub>DN</sub>', desc: 'Custo degradação' },
+  { key: 'cc',  label: 'C<sub>DC</sub>', desc: 'Custo choque' },
   { key: 'K',   label: 'K',  desc: 'Nº de inspeções' },
   { key: 'D',   label: 'Δ',  desc: 'Intervalo inspeção' },
   { key: 'T',   label: 'T',  desc: 'Idade preventiva' },
